@@ -1,0 +1,74 @@
+Note: this is still a work in progress...
+
+Songbook api database
+
+== song ==
+- title
+- number
+- category_id
+- page_number
+- edition
+- lyrics
+
+== verse ==
+- id
+- song_number
+- lyrics
+- user_id
+- date_added
+
+== category ==
+- id 
+- name
+
+== rating ==
+- user_id
+- verse_id
+- rating
+
+PostgreSQL:
+
+CREATE TABLE book (
+	id SERIAL PRIMARY KEY,
+	title dom_book_title,
+	edition dom_book_edition,
+	title 
+);
+
+CREATE TABLE song (
+    number INTEGER,
+	book_id SERIAL NOT NULL FOREIGN KEY,
+	title dom_title NOT NULL,
+	page_number INTEGER NOT NULL,
+    lyrics dom_lyrics NOT NULL,
+	category_id INTEGER NOT NULL FOREIGN KEY,
+	PRIMARY KEY(number, edition)
+);
+
+CREATE TABLE verse (
+	id SERIAL,
+	date_added DATE NOT NULL,
+	song_number INTEGER,
+	lyrics dom_verse_lyrics NOT NULL,
+	user_id SERIAL FOREIGN KEY,
+);
+
+CREATE DOMAIN dom_title TEXT CHECK (
+    LENGTH(VALUE) > 0 AND
+    LENGTH(VALUE) < 50
+);
+
+CREATE DOMAIN dom_song_lyrics TEXT CHECK (
+    LENGTH(VALUE) > 0 AND
+    LENGTH(VALUE) < 10000
+);
+
+CREATE DOMAIN dom_verse_lyrics TEXT CHECK (
+    LENGTH(VALUE) > 0 AND
+    LENGTH(VALUE) < 1000
+);
+
+CREATE DOMAIN dom_edition TEXT CHECK (
+    LENGTH(VALUE) > 0 AND
+    LENGTH(VALUE) < 10
+);

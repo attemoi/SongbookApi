@@ -1,14 +1,13 @@
-package fi.attemoisio.songbookapi;
+package fi.attemoisio.songbookapi.resource;
 
 import javax.ws.rs.core.Application;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
-
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
-import fi.attemoisio.songbookapi.MyResource;
+import static org.junit.Assert.assertEquals;
+import fi.attemoisio.songbookapi.resource.MyResource;
 
 public class MyResourceTest extends JerseyTest {
 

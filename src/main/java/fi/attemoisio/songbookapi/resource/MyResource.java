@@ -1,4 +1,4 @@
-package fi.attemoisio.songbookapi;
+package fi.attemoisio.songbookapi.resource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

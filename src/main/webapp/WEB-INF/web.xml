@@ -8,10 +8,23 @@
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>jersey.config.server.provider.packages</param-name>
-            <param-value>fi.attemoisio.songbookapi</param-value>
+            <param-value>fi.attemoisio.songbookapi;com.wordnik.swagger.jersey.listing</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+	<servlet>
+		<servlet-name>JerseyJaxrsConfig</servlet-name>
+		<servlet-class>com.wordnik.swagger.jersey.config.JerseyJaxrsConfig</servlet-class>
+		<init-param>
+			<param-name>api.version</param-name>
+			<param-value>1.0.0</param-value>
+		</init-param>
+		<init-param>
+			<param-name>swagger.api.basepath</param-name>
+			<param-value>http://localhost:8002/api</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
     <servlet-mapping>
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/*</url-pattern>

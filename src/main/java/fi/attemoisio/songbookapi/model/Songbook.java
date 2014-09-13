@@ -38,7 +38,7 @@ public class Songbook {
 		this.releaseDate = releaseDate;
 	}
 	
-	@XmlElement(name = "getTitle")
+	@XmlElement(name = "title")
 	public String getTitle() {
 		return title;
 	}

@@ -10,8 +10,9 @@ public class Songbook {
 	
 	private int id;
 	private int ownerId;
-	private Date releaseDate;
+	private int releaseYear;
 	private String title;
+
 	private String description;
 	
 	@XmlElement(name = "id")
@@ -30,12 +31,12 @@ public class Songbook {
 		this.ownerId = ownerId;
 	}
 	
-	@XmlElement(name = "releaseDate")
-	public Date getReleaseDate() {
-		return releaseDate;
+	@XmlElement(name = "releaseYear")
+	public int getReleaseYear() {
+		return releaseYear;
 	}
-	public void setReleaseDate(Date releaseDate) {
-		this.releaseDate = releaseDate;
+	public void setReleaseDate(int releaseYear) {
+		this.releaseYear = releaseYear;
 	}
 	
 	@XmlElement(name = "title")

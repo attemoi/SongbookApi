@@ -23,14 +23,6 @@ public class Songbook {
 		this.id = id;
 	}
 	
-	@XmlElement(name = "ownerId")
-	public int getOwnerId() {
-		return ownerId;
-	}
-	public void setOwnerId(int ownerId) {
-		this.ownerId = ownerId;
-	}
-	
 	@XmlElement(name = "releaseYear")
 	public int getReleaseYear() {
 		return releaseYear;

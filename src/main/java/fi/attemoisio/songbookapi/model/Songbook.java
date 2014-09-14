@@ -35,7 +35,7 @@ public class Songbook {
 	public int getReleaseYear() {
 		return releaseYear;
 	}
-	public void setReleaseDate(int releaseYear) {
+	public void setReleaseYear(int releaseYear) {
 		this.releaseYear = releaseYear;
 	}
 	

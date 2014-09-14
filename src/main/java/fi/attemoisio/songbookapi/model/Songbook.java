@@ -1,5 +1,9 @@
 package fi.attemoisio.songbookapi.model;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -21,6 +25,8 @@ public class Songbook {
 	}
 	
 	@XmlElement(name = "releaseYear")
+	@Min(1970)
+	@Max(9999)
 	public int getReleaseYear() {
 		return releaseYear;
 	}
@@ -28,6 +34,8 @@ public class Songbook {
 		this.releaseYear = releaseYear;
 	}
 	
+	@NotNull
+	@Size(min = 1, max = 255)
 	@XmlElement(name = "title")
 	public String getTitle() {
 		return title;

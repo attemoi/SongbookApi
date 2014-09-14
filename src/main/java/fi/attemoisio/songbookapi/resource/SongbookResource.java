@@ -25,8 +25,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -37,7 +37,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.multipart.FormDataParam;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -79,26 +78,37 @@ public class SongbookResource {
 	}
 
 	@POST
-	@ApiOperation(value = "Add a new songbook")
-	@ApiResponses(value = { @ApiResponse(code = 405, message = "Invalid input") })
+	@ApiOperation(value = "Add a new songbook (form)")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 201, message = "Songbook created"),
+			@ApiResponse(code = 400, message = "Invalid input")})
 	@Consumes("application/x-www-form-urlencoded")
 	public Response addSongbook(
-			@ApiParam(value = "Songbook title", required = true) @FormParam("title") String title) {
+			@ApiParam(value = "Songbook title", required = true) @FormParam("title") String title,
+			@ApiParam(value = "Songbook description", required = true) @FormParam("description") String description,
+			@ApiParam(value = "Songbook release year", required = true) @FormParam("releaseYear") int releaseYear) {
 
+		if (title == null || title.equals("a"))
+			throw new BadRequestException("Missing or invalid title");
+		
 		Songbook book = new Songbook();
 		book.setTitle(title);
-		book.setId(123);
+		book.setDescription(description);
+		book.setReleaseYear(releaseYear);
 				
 		// TODO: add songbook to database and return the created object along
 		// with the proper http response
-
+		book.setId(123);
+		
 		String id = Integer.toString(book.getId());	
 		return Response.created(getCreatedUri(id)).entity(book).build();
 	}
 	
 	@POST
-	@ApiOperation(value = "Add a new songbook")
-	@ApiResponses(value = { @ApiResponse(code = 405, message = "Invalid input") })
+	@ApiOperation(value = "Add a new songbook (json)")
+	@ApiResponses(value = { 
+			@ApiResponse(code = 201, message = "Songbook created"),
+			@ApiResponse(code = 405, message = "Invalid input")})
 	@Consumes("application/json")
 	public Response addSongbook(
 			@ApiParam(value = "Songbook to be added", required = true) Songbook book) {

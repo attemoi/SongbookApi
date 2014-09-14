@@ -1,7 +1,5 @@
 package fi.attemoisio.songbookapi.model;
 
-import java.sql.Date;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -9,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Songbook {
 	
 	private int id;
-	private int ownerId;
 	private int releaseYear;
 	private String title;
 

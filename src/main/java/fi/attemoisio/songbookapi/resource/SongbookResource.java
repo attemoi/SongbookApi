@@ -21,20 +21,26 @@ package fi.attemoisio.songbookapi.resource;
  * ###################################################################-
  */
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NoContentException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
+import com.sun.jersey.multipart.FormDataParam;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.ApiResponse;
 
@@ -45,6 +51,13 @@ import fi.attemoisio.songbookapi.model.Songbook;
 @Produces({ "application/json" })
 public class SongbookResource {
 
+	@Context UriInfo uriInfo;
+
+	public URI getCreatedUri(String resourceId)
+	{
+		return uriInfo.getRequestUri().resolve(resourceId);
+	}
+	
 	@GET
 	@ApiOperation(
 			value = "List all songbooks", 
@@ -55,7 +68,7 @@ public class SongbookResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSongbooks(){
 
-		// TODO: Get books from Postgres
+		// TODO: Get books from database
 		
 		List<Songbook> books = new ArrayList<>();	
 		
@@ -63,5 +76,37 @@ public class SongbookResource {
 			return Response.status(Response.Status.NO_CONTENT).entity("No songbooks found").build();
 
 		return Response.ok(books).build();
+	}
+
+	@POST
+	@ApiOperation(value = "Add a new songbook")
+	@ApiResponses(value = { @ApiResponse(code = 405, message = "Invalid input") })
+	@Consumes("application/x-www-form-urlencoded")
+	public Response addSongbook(
+			@ApiParam(value = "Songbook title", required = true) @FormParam("title") String title) {
+
+		Songbook book = new Songbook();
+		book.setTitle(title);
+		book.setId(123);
+				
+		// TODO: add songbook to database and return the created object along
+		// with the proper http response
+
+		String id = Integer.toString(book.getId());	
+		return Response.created(getCreatedUri(id)).entity(book).build();
+	}
+	
+	@POST
+	@ApiOperation(value = "Add a new songbook")
+	@ApiResponses(value = { @ApiResponse(code = 405, message = "Invalid input") })
+	@Consumes("application/json")
+	public Response addSongbook(
+			@ApiParam(value = "Songbook to be added", required = true) Songbook book) {
+				
+		// TODO: add songbook to database and return the created object along
+		// with the proper http response
+
+		String id = Integer.toString(book.getId());	
+		return Response.created(getCreatedUri(id)).entity(book).build();
 	}
 }

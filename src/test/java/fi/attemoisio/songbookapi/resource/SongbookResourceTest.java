@@ -22,14 +22,20 @@ package fi.attemoisio.songbookapi.resource;
  */
 
 
+import java.sql.Date;
+
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import fi.attemoisio.songbookapi.model.Songbook;
 import fi.attemoisio.songbookapi.resource.SongbookResource;
 
 public class SongbookResourceTest extends JerseyTest {
@@ -39,9 +45,6 @@ public class SongbookResourceTest extends JerseyTest {
         return new ResourceConfig(SongbookResource.class);
     }
 
-    /**
-     * Test to see that the message "Got it!" is sent in the response.
-     */
     @Test
     public void testGetSongbooks() {
         final String responseMsg = target().path("songbooks").request().get(String.class);
@@ -50,4 +53,5 @@ public class SongbookResourceTest extends JerseyTest {
         final Response response = target().path("songbooks").request().head();
         assertEquals(204, response.getStatus());
     }
+
 }

@@ -25,7 +25,11 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -38,7 +42,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.sun.jersey.api.ConflictException;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponses;
@@ -48,14 +54,14 @@ import fi.attemoisio.songbookapi.model.Songbook;
 
 @Path("songbooks")
 @Api(value = "/songbooks", description = "Operations about songbooks")
-@Produces({ "application/json" })
+@Produces({ MediaType.APPLICATION_JSON })
 public class SongbookResource {
 
 	@Context UriInfo uriInfo;
-
-	public URI getCreatedUri(String resourceId)
+	
+	private URI getCreatedUri(String resourceId)
 	{
-		return uriInfo.getRequestUri().resolve(resourceId);
+		return uriInfo.getRequestUri().resolve("songbooks").resolve(resourceId);
 	}
 	
 	@GET
@@ -66,6 +72,7 @@ public class SongbookResource {
 			responseContainer = "List")
 	@ApiResponses(value = { @ApiResponse(code = 204, message = "Resource not found") })
 	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.TEXT_PLAIN)
 	public Response getSongbooks(){
 
 		// TODO: Get books from database
@@ -77,46 +84,23 @@ public class SongbookResource {
 
 		return Response.ok(books).build();
 	}
-
-	@POST
-	@ApiOperation(value = "Add a new songbook (form)")
-	@ApiResponses(value = { 
-			@ApiResponse(code = 201, message = "Songbook created"),
-			@ApiResponse(code = 400, message = "Invalid input")})
-	@Consumes("application/x-www-form-urlencoded")
-	public Response addSongbook(
-			@ApiParam(value = "Songbook title", required = true) @FormParam("title") String title,
-			@ApiParam(value = "Songbook description", required = true) @FormParam("description") String description,
-			@ApiParam(value = "Songbook release year", required = true) @FormParam("releaseYear") int releaseYear) {
-
-		if (title == null || title.equals("a"))
-			throw new BadRequestException("Missing or invalid title");
-		
-		Songbook book = new Songbook();
-		book.setTitle(title);
-		book.setDescription(description);
-		book.setReleaseYear(releaseYear);
-				
-		// TODO: add songbook to database and return the created object along
-		// with the proper http response
-		book.setId(123);
-		
-		String id = Integer.toString(book.getId());	
-		return Response.created(getCreatedUri(id)).entity(book).build();
-	}
 	
 	@POST
 	@ApiOperation(value = "Add a new songbook (json)")
 	@ApiResponses(value = { 
-			@ApiResponse(code = 201, message = "Songbook created"),
-			@ApiResponse(code = 405, message = "Invalid input")})
+			@ApiResponse(code = 201, message = "Songbook created succesfully"),	
+			@ApiResponse(code = 405, message = "Invalid input"),
+			@ApiResponse(code = 409, message = "Songbook with given title already exists")})
 	@Consumes("application/json")
 	public Response addSongbook(
-			@ApiParam(value = "Songbook to be added", required = true) Songbook book) {
+			@ApiParam(value = "Songbook to be added", required = true) @Valid Songbook book) {
 				
 		// TODO: add songbook to database and return the created object along
 		// with the proper http response
 
+		if (false) //TODO: if a songbook with the title already exists)
+			throw new ConflictException("Songbook with given title already exists");
+		
 		String id = Integer.toString(book.getId());	
 		return Response.created(getCreatedUri(id)).entity(book).build();
 	}

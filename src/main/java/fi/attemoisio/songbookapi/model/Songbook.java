@@ -7,7 +7,11 @@ import javax.validation.constraints.Max;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 @XmlRootElement(name = "Songbook")
+@ApiModel(description = "Songbook model")
 public class Songbook {
 	
 	private int id;
@@ -17,6 +21,7 @@ public class Songbook {
 	private String description;
 	
 	@XmlElement(name = "id")
+	@ApiModelProperty(position = 0, hidden = true)
 	public int getId() {
 		return id;
 	}
@@ -25,7 +30,8 @@ public class Songbook {
 	}
 	
 	@XmlElement(name = "releaseYear")
-	@Min(1970)
+	@ApiModelProperty(position = 2, hidden = true)
+	@Min(1600)
 	@Max(9999)
 	public int getReleaseYear() {
 		return releaseYear;
@@ -37,6 +43,7 @@ public class Songbook {
 	@NotNull
 	@Size(min = 1, max = 255)
 	@XmlElement(name = "title")
+	@ApiModelProperty(position = 1, hidden = true)
 	public String getTitle() {
 		return title;
 	}
@@ -45,6 +52,8 @@ public class Songbook {
 	}
 	
 	@XmlElement(name = "description")
+	@Size(min = 1, max = 10000)
+	@ApiModelProperty(position = 3, hidden = true)
 	public String getDescription() {
 		return description;
 	}

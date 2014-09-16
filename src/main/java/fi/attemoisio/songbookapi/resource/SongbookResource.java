@@ -26,13 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -44,7 +38,6 @@ import javax.ws.rs.core.UriInfo;
 
 import com.sun.jersey.api.ConflictException;
 import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiModelProperty;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponses;
@@ -72,7 +65,6 @@ public class SongbookResource {
 			responseContainer = "List")
 	@ApiResponses(value = { @ApiResponse(code = 204, message = "Resource not found") })
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.TEXT_PLAIN)
 	public Response getSongbooks(){
 
 		// TODO: Get books from database
@@ -90,7 +82,7 @@ public class SongbookResource {
 	@ApiResponses(value = { 
 			@ApiResponse(code = 201, message = "Songbook created succesfully"),	
 			@ApiResponse(code = 405, message = "Invalid input"),
-			@ApiResponse(code = 409, message = "Songbook with given title already exists")})
+			@ApiResponse(code = 409, message = "Songbook with given id already exists")})
 	@Consumes("application/json")
 	public Response addSongbook(
 			@ApiParam(value = "Songbook to be added", required = true) @Valid Songbook book) {
@@ -98,10 +90,9 @@ public class SongbookResource {
 		// TODO: add songbook to database and return the created object along
 		// with the proper http response
 
-		if (false) //TODO: if a songbook with the title already exists)
-			throw new ConflictException("Songbook with given title already exists");
+		if (false) //TODO: if a songbook with the id already exists)
+			throw new ConflictException("Songbook with given id already exists");
 		
-		String id = Integer.toString(book.getId());	
-		return Response.created(getCreatedUri(id)).entity(book).build();
+		return Response.created(getCreatedUri(book.getId())).entity(book).build();
 	}
 }

@@ -1,4 +1,4 @@
-package fi.attemoisio.songbookapi.app;
+package fi.attemoisio.songbookapi.validation.constraints;
 
 /*
  * ###################################################################=
@@ -21,20 +21,20 @@ package fi.attemoisio.songbookapi.app;
  * ###################################################################-
  */
 
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.ServerProperties;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 
-public class SongbookApplication extends ResourceConfig{
-	public SongbookApplication() {
-		
-		// VALIDATION
+public class SlugValidator implements ConstraintValidator<Slug, String> {
 
-		// Enables sending validation errors in response entity to the client.
-	    property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
-	    
-	    // Disables @ValidateOnExecution check.
-	    //property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
-	    
-		packages("fi.attemoisio.songbookapi.resource;fi.attemoisio.songbookapi.model");
-	}
+	@Override
+    public void initialize(Slug constraintAnnotation) {
+    }
+
+	@Override
+    public boolean isValid(String value, ConstraintValidatorContext constraintContext) {
+        if (value == null)
+            return true;
+         
+        return value.matches("/^[a-z0-9-]+$/");
+    }
 }

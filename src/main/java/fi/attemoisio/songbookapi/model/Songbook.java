@@ -1,49 +1,70 @@
 package fi.attemoisio.songbookapi.model;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+/*
+ * ###################################################################=
+ * Laulukirja API
+ * %%
+ * Copyright (C) 2014 Atte Moisio
+ * %%
+ * DO WHAT YOU WANT TO PUBLIC LICENSE
+ * 
+ *  Copyright (C) 2014 Atte Moisio
+ * 
+ *  Everyone is permitted to copy and distribute verbatim or modified
+ *  copies of this license document, and changing it is allowed as long
+ *  as the name is changed.
+ * 
+ *  DO WHAT YOU WANT TO PUBLIC LICENSE
+ *  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ * 
+ *  0. You just DO WHAT YOU WANT TO.
+ * ###################################################################-
+ */
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;
+import javax.ws.rs.DefaultValue;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.wordnik.swagger.annotations.ApiModel;
-import com.wordnik.swagger.annotations.ApiModelProperty;
+
+import fi.attemoisio.songbookapi.validation.constraints.Slug;
+import fi.attemoisio.songbookapi.validation.constraints.Text;
+import fi.attemoisio.songbookapi.validation.constraints.Title;
 
 @XmlRootElement(name = "Songbook")
 @ApiModel(description = "Songbook model")
 public class Songbook {
 	
-	private int id;
-	private int releaseYear;
+	private String id;
+	private Integer releaseYear;
 	private String title;
 
 	private String description;
 	
-	@XmlElement(name = "id")
-	@ApiModelProperty(position = 0, hidden = true)
-	public int getId() {
+	@XmlElement(name = "id", nillable = true)
+	@Slug()
+	public String getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	
-	@XmlElement(name = "releaseYear")
-	@ApiModelProperty(position = 2, hidden = true)
+	@XmlElement(name = "releaseYear", nillable=true)
 	@Min(1600)
 	@Max(9999)
-	public int getReleaseYear() {
+	public Integer getReleaseYear() {
 		return releaseYear;
 	}
-	public void setReleaseYear(int releaseYear) {
+	public void setReleaseYear(Integer releaseYear) {
 		this.releaseYear = releaseYear;
 	}
 	
-	@NotNull
-	@Size(min = 1, max = 255)
 	@XmlElement(name = "title")
-	@ApiModelProperty(position = 1, hidden = true)
+	@DefaultValue("")
+	@Title(message = "Invalid title")
 	public String getTitle() {
 		return title;
 	}
@@ -51,9 +72,8 @@ public class Songbook {
 		this.title = title;
 	}
 	
-	@XmlElement(name = "description")
-	@Size(min = 1, max = 10000)
-	@ApiModelProperty(position = 3, hidden = true)
+	@XmlElement(name = "description", nillable=true)
+	@Text
 	public String getDescription() {
 		return description;
 	}

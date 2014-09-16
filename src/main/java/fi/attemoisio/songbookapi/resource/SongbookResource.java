@@ -81,7 +81,7 @@ public class SongbookResource {
 	@ApiOperation(value = "Add a new songbook (json)")
 	@ApiResponses(value = { 
 			@ApiResponse(code = 201, message = "Songbook created succesfully"),	
-			@ApiResponse(code = 405, message = "Invalid input"),
+			@ApiResponse(code = 400, message = "Invalid input"),
 			@ApiResponse(code = 409, message = "Songbook with given id already exists")})
 	@Consumes("application/json")
 	public Response addSongbook(

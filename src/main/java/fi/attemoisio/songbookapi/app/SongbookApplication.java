@@ -35,6 +35,6 @@ public class SongbookApplication extends ResourceConfig{
 	    // Disables @ValidateOnExecution check.
 	    //property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
 	    
-		packages("fi.attemoisio.songbookapi.resource;fi.attemoisio.songbookapi.model");
+		packages("fi.attemoisio.songbookapi", "com.wordnik.swagger.jersey.listing");
 	}
 }

@@ -10,10 +10,6 @@
 		    <param-name>javax.ws.rs.Application</param-name>
 		    <param-value>fi.attemoisio.songbookapi.app.SongbookApplication</param-value>
 		</init-param>
-        <init-param>
-            <param-name>jersey.config.server.provider.packages</param-name>
-            <param-value>fi.attemoisio.songbookapi;com.wordnik.swagger.jersey.listing;</param-value>
-        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
     

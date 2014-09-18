@@ -21,6 +21,9 @@ package fi.attemoisio.songbookapi.app;
  * ###################################################################-
  */
 
+import java.util.logging.Logger;
+
+import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
@@ -36,5 +39,8 @@ public class SongbookApplication extends ResourceConfig{
 	    //property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
 	    
 		packages("fi.attemoisio.songbookapi", "com.wordnik.swagger.jersey.listing");
+		
+		// Enable LoggingFilter & output entity.     
+        registerInstances(new LoggingFilter(Logger.getLogger(SongbookApplication.class.getName()), true));
 	}
 }

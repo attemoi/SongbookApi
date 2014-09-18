@@ -38,10 +38,10 @@ import fi.attemoisio.songbookapi.validation.constraints.Title;
 public class Songbook {
 	
 	private String id;
-	private Integer releaseYear;
+	private Integer releaseYear = null;
 	private String title;
 
-	private String description;
+	private String description = null;
 	
 	@XmlElement(name = "id", nillable = true)
 	@Slug()

@@ -35,6 +35,6 @@ public class SlugValidator implements ConstraintValidator<Slug, String> {
         if (value == null)
             return true;
          
-        return value.matches("/^[a-z0-9-]+$/");
+        return value.matches("^[a-z0-9-]+$");
     }
 }

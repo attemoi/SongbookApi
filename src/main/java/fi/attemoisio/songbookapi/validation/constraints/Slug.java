@@ -29,8 +29,6 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 
@@ -38,7 +36,6 @@ import static java.lang.annotation.RetentionPolicy.*;
 @Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE })
 @Retention(RUNTIME)
 @Constraint(validatedBy = SlugValidator.class)
-@NotBlank
 @Size(min = 1, max = 50)
 public @interface Slug {
 	String message() default "Only alphanumerics and hyphens(\"-\") allowed.";

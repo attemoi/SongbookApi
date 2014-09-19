@@ -16,12 +16,14 @@
         <jetty.version>9.0.6.v20130930</jetty.version>
         <swagger.version>1.3.8</swagger.version>
         <postgresql.version>9.3-1102-jdbc41</postgresql.version>
+        <maven-compiler.version>3.1</maven-compiler.version>
         
         <license.licenseName>wpl</license.licenseName>
     	<license.licenseResolver>${project.baseUri}/src/license</license.licenseResolver>
     	<project.inceptionYear>2014</project.inceptionYear>
     	<license.organizationName>Atte Moisio</license.organizationName>
     	<license.projectName>Laulukirja API</license.projectName>
+    	
     </properties>
 
     <dependencyManagement>
@@ -89,7 +91,6 @@
 		<dependency>
 		    <groupId>org.glassfish.jersey.ext</groupId>
 		    <artifactId>jersey-bean-validation</artifactId>
-		    <version>2.12</version>
 		</dependency>
 
     </dependencies>
@@ -138,7 +139,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>${maven-compiler.version}</version>
                 <inherited>true</inherited>
                 <configuration>
                     <source>1.8</source>
@@ -176,9 +177,7 @@
                     <war>${project.build.directory}/${project.build.finalName}.war</war>
                 </configuration>
             </plugin>
-
-
-            
+       
         </plugins>
     </build>
     

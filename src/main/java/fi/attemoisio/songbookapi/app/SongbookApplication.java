@@ -30,6 +30,11 @@ import org.glassfish.jersey.server.ServerProperties;
 public class SongbookApplication extends ResourceConfig{
 	public SongbookApplication() {
 		
+		packages(
+				"fi.attemoisio.songbookapi.SongbookApplication", 
+				"fi.attemoisio.songbookapi", 
+				"com.wordnik.swagger.jersey.listing");
+		
 		// VALIDATION
 
 		// Enables sending validation errors in response entity to the client.
@@ -37,8 +42,6 @@ public class SongbookApplication extends ResourceConfig{
 	    
 	    // Disables @ValidateOnExecution check.
 	    //property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
-	    
-		packages("fi.attemoisio.songbookapi", "com.wordnik.swagger.jersey.listing");
 		
 		// Enable LoggingFilter & output entity.     
         registerInstances(new LoggingFilter(Logger.getLogger(SongbookApplication.class.getName()), true));

@@ -23,8 +23,7 @@ public class PostgresSongbookRepository implements SongbookRepository {
 	@Override
 	public Collection<Songbook> getSongbooks() {
 
-		PostgresHelper client = new PostgresHelper(DbContract.HOST,
-				DbContract.DB_NAME, DbContract.USERNAME, DbContract.PASSWORD);
+		PostgresHelper client = new PostgresHelper();
 
 		try {
 			client.connect();
@@ -36,6 +35,7 @@ public class PostgresSongbookRepository implements SongbookRepository {
 			ResultSet rs = client
 					.execQuery("SELECT id, title, releaseYear, description, other_notes from songbooks");
 			ArrayList<Songbook> books = new ArrayList<Songbook>();
+			
 			while (rs.next()) {
 				Songbook book = new Songbook();
 				book.setId(rs.getString("id"));

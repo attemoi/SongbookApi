@@ -32,8 +32,7 @@ public class SongbookApplication extends ResourceConfig{
 		
 		register(new SongbookApplicationBinder());
 		
-		packages(
-				"fi.attemoisio.songbookapi.SongbookApplication", 
+		packages( 
 				"fi.attemoisio.songbookapi", 
 				"com.wordnik.swagger.jersey.listing");
 		

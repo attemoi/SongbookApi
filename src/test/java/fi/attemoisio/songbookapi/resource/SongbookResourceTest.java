@@ -38,7 +38,7 @@ public class SongbookResourceTest extends JerseyTest {
         return new ResourceConfig(SongbookResource.class);
     }
 
-    @Test
+    //@Test
     public void testGetSongbooks() {
         final String responseMsg = target().path("songbooks").request().get(String.class);
         assertEquals("", responseMsg);

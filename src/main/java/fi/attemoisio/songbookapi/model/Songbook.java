@@ -42,6 +42,7 @@ public class Songbook {
 	private String title;
 
 	private String description = null;
+	private String otherNotes = null;
 	
 	@XmlElement(name = "id", nillable = true)
 	@Slug()
@@ -79,6 +80,15 @@ public class Songbook {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	@XmlElement(name = "other_notes", nillable=true)
+	@Text
+	public String getOtherNotes() {
+		return otherNotes;
+	}
+	public void setOtherNotes(String otherNotes) {
+		this.otherNotes = otherNotes;
 	}
 	
 }

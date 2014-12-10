@@ -23,8 +23,11 @@ package fi.attemoisio.songbookapi.resource;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -32,6 +35,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -44,13 +48,16 @@ import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.ApiResponse;
 
 import fi.attemoisio.songbookapi.model.Songbook;
+import fi.attemoisio.songbookapi.repository.SongbookRepository;
 
 @Path("songbooks")
 @Api(value = "songbooks", description = "Operations about songbooks")
 @Produces({ MediaType.APPLICATION_JSON })
+@ManagedBean
 public class SongbookResource {
 
 	@Context UriInfo uriInfo;
+	@Inject SongbookRepository repository;
 	
 	private URI getCreatedUri(String resourceId)
 	{
@@ -67,14 +74,14 @@ public class SongbookResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSongbooks(){
 
-		// TODO: Get books from database
-		
-		List<Songbook> books = new ArrayList<>();	
+		Collection<Songbook> books = repository.getSongbooks();
 		
 		if (books.isEmpty())
 			return Response.status(Response.Status.NO_CONTENT).entity("No songbooks found").build();
 
-		return Response.ok(books).build();
+	    GenericEntity<Collection<Songbook>> entity = 
+	               new GenericEntity<Collection<Songbook>>(books) {};
+		return Response.ok(entity).build();
 	}
 	
 	@POST

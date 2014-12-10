@@ -30,6 +30,8 @@ import org.glassfish.jersey.server.ServerProperties;
 public class SongbookApplication extends ResourceConfig{
 	public SongbookApplication() {
 		
+		register(new SongbookApplicationBinder());
+		
 		packages(
 				"fi.attemoisio.songbookapi.SongbookApplication", 
 				"fi.attemoisio.songbookapi", 

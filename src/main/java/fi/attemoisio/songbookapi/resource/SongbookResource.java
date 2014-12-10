@@ -46,7 +46,7 @@ import com.wordnik.swagger.annotations.ApiResponse;
 import fi.attemoisio.songbookapi.model.Songbook;
 
 @Path("songbooks")
-@Api(value = "/songbooks", description = "Operations about songbooks")
+@Api(value = "songbooks", description = "Operations about songbooks")
 @Produces({ MediaType.APPLICATION_JSON })
 public class SongbookResource {
 

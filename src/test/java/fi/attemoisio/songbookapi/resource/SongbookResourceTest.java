@@ -21,14 +21,24 @@ package fi.attemoisio.songbookapi.resource;
  * ###################################################################-
  */
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import fi.attemoisio.songbookapi.repository.SongbookRepository;
+import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
+import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
+import fi.attemoisio.songbookapi.repository.exceptions.RepositoryTimeoutException;
 import fi.attemoisio.songbookapi.resource.SongbookResource;
 
 public class SongbookResourceTest extends JerseyTest {
@@ -38,13 +48,33 @@ public class SongbookResourceTest extends JerseyTest {
         return new ResourceConfig(SongbookResource.class);
     }
 
-    //@Test
-    public void testGetSongbooks() {
-        final String responseMsg = target().path("songbooks").request().get(String.class);
-        assertEquals("", responseMsg);
+    @Test
+    public void testGetSongbooks() throws URISyntaxException, RepositoryConnectionFailedException, RepositoryRequestFailedException, RepositoryTimeoutException {
+    	
+    	SongbookResource resource = new SongbookResource();
+    	
+    	// Test normal ok response
+    	resource.repository = new MockSongbookRepository();
+        assertEquals(200, resource.getSongbooks().getStatus());
         
-        final Response response = target().path("songbooks").request().head();
-        assertEquals(204, response.getStatus());
+        // Test request timeout
+        SongbookRepository r2 = mock(SongbookRepository.class);
+        when(r2.getSongbooks()).thenThrow(new RepositoryTimeoutException("Request timeout"));
+        resource.repository = r2;
+        assertEquals(408, resource.getSongbooks().getStatus());
+        
+        // Test server error
+        SongbookRepository r1 = mock(SongbookRepository.class);
+        when(r1.getSongbooks()).thenThrow(new RepositoryRequestFailedException("Server error"));
+        resource.repository = r1;
+        assertEquals(500, resource.getSongbooks().getStatus());
+
+        // Test service unavailable
+        SongbookRepository r3 = mock(SongbookRepository.class);
+        when(r3.getSongbooks()).thenThrow(new RepositoryConnectionFailedException("Service unavailable"));
+        resource.repository = r3;
+        assertEquals(503, resource.getSongbooks().getStatus());
+        
     }
 
 }

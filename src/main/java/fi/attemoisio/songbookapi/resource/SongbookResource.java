@@ -22,9 +22,7 @@ package fi.attemoisio.songbookapi.resource;
  */
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -44,11 +42,14 @@ import com.sun.jersey.api.ConflictException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiResponses;
 import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 import fi.attemoisio.songbookapi.model.Songbook;
 import fi.attemoisio.songbookapi.repository.SongbookRepository;
+import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
+import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
+import fi.attemoisio.songbookapi.repository.exceptions.RepositoryTimeoutException;
 
 @Path("songbooks")
 @Api(value = "songbooks", description = "Operations about songbooks")
@@ -70,17 +71,29 @@ public class SongbookResource {
 			notes = "Returns a list of all available songbooks.", 
 			response = Songbook.class, 
 			responseContainer = "List")
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "Resource not found") })
+	@ApiResponses(value = { 
+			@ApiResponse(code = 204, message = "Resource not found"),
+			@ApiResponse(code = 408, message = "Request timeout"),
+			@ApiResponse(code = 500, message = "Internal server error"),
+			@ApiResponse(code = 503, message = "Service unavailable")})
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSongbooks(){
 
-		Collection<Songbook> books = repository.getSongbooks();
-		
-		if (books.isEmpty())
+		Collection<Songbook> books;
+		try {
+			books = repository.getSongbooks();
+		} catch (RepositoryConnectionFailedException e) {
+			return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Service unavailable").build();
+		} catch (RepositoryRequestFailedException e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Internal server error").build();
+		} catch (RepositoryTimeoutException e) {
+			return Response.status(Response.Status.REQUEST_TIMEOUT).entity("Request timed out").build();
+		}
+
+		if (books == null || books.isEmpty())
 			return Response.status(Response.Status.NO_CONTENT).entity("No songbooks found").build();
 
-	    GenericEntity<Collection<Songbook>> entity = 
-	               new GenericEntity<Collection<Songbook>>(books) {};
+	    GenericEntity<Collection<Songbook>> entity = new GenericEntity<Collection<Songbook>>(books) {};
 		return Response.ok(entity).build();
 	}
 	
@@ -89,7 +102,10 @@ public class SongbookResource {
 	@ApiResponses(value = { 
 			@ApiResponse(code = 201, message = "Songbook created succesfully"),	
 			@ApiResponse(code = 400, message = "Invalid input"),
-			@ApiResponse(code = 409, message = "Songbook with given id already exists")})
+			@ApiResponse(code = 409, message = "Songbook with given id already exists"),
+			@ApiResponse(code = 500, message = "Internal server error"),
+			@ApiResponse(code = 503, message = "Service unavailable")})
+			
 	@Consumes("application/json")
 	public Response addSongbook(
 			@ApiParam(value = "Songbook to be added", required = true) @Valid Songbook book) {

@@ -1,12 +1,9 @@
 package fi.attemoisio.songbookapi.postgres;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.annotation.ManagedBean;
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.sql.rowset.CachedRowSet;
 
@@ -16,12 +13,14 @@ import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFaile
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryTimeoutException;
 
-@Resource
-@ManagedBean
 public class PostgresSongbookRepository implements SongbookRepository {
 
-	@Inject
 	SQLDriverManager driver;
+	
+    @Inject
+	public PostgresSongbookRepository(SQLDriverManager driver) {
+    	this.driver = driver;
+    }
 
 	@Override
 	public Collection<Songbook> getSongbooks()
@@ -61,8 +60,8 @@ public class PostgresSongbookRepository implements SongbookRepository {
 	}
 
 	@Override
-	public Songbook addSongbook(Songbook book) {
+	public boolean addSongbook(Songbook book) {
 		// TODO Auto-generated method stub
-		return null;
+		return true;
 	}
 }

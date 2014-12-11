@@ -54,11 +54,17 @@ import fi.attemoisio.songbookapi.repository.exceptions.RepositoryTimeoutExceptio
 @Path("songbooks")
 @Api(value = "songbooks", description = "Operations about songbooks")
 @Produces({ MediaType.APPLICATION_JSON })
-@ManagedBean
 public class SongbookResource {
 
-	@Context UriInfo uriInfo;
-	@Inject SongbookRepository repository;
+	@Context
+	UriInfo uriInfo;
+	
+	SongbookRepository repository;
+	
+	@Inject
+	public SongbookResource(SongbookRepository repository) {
+		this.repository = repository;
+	}
 	
 	private URI getCreatedUri(String resourceId)
 	{
@@ -110,12 +116,19 @@ public class SongbookResource {
 	public Response addSongbook(
 			@ApiParam(value = "Songbook to be added", required = true) @Valid Songbook book) {
 				
-		// TODO: add songbook to database and return the created object along
-		// with the proper http response
-
-		if (false) //TODO: if a songbook with the id already exists)
-			throw new ConflictException("Songbook with given id already exists");
+		try {
+			if (repository.addSongbook(book)) {
+				return Response.created(getCreatedUri(book.getId())).entity(book).build();
+			} else {
+				return Response.status(Response.Status.CONFLICT).entity("Songbook with given id already exists").build();
+			}	
+		} catch (RepositoryConnectionFailedException e) {
+			return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Service unavailable").build();
+		} catch (RepositoryRequestFailedException e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Internal server error").build();
+		} catch (RepositoryTimeoutException e) {
+			return Response.status(Response.Status.REQUEST_TIMEOUT).entity("Request timed out").build();
+		}
 		
-		return Response.created(getCreatedUri(book.getId())).entity(book).build();
 	}
 }

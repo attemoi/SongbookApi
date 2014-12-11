@@ -10,7 +10,6 @@ import java.sql.SQLTimeoutException;
 import java.sql.Statement;
 
 import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetFactory;
 import javax.sql.rowset.RowSetProvider;
 

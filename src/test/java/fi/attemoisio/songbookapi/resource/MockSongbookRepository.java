@@ -12,24 +12,27 @@ import fi.attemoisio.songbookapi.repository.exceptions.RepositoryTimeoutExceptio
 
 public class MockSongbookRepository implements SongbookRepository {
 
-	@Override
-	public Collection<Songbook> getSongbooks()
-			throws RepositoryConnectionFailedException,
-			RepositoryRequestFailedException, RepositoryTimeoutException {
+	List<Songbook> books;
+	
+	public MockSongbookRepository() {
 		
-		List<Songbook> books = new ArrayList<Songbook>();
-		
+		books = new ArrayList<Songbook>();
 		for (int i = 0; i < 5; i++) {
 			Songbook book = new Songbook();
-			book.setDescription("description lorem ipsum");
+			book.setDescription("description lorem ipsum " + i);
 			book.setId("book" + i);
-			book.setOtherNotes("othernotes lorem ipsum");
+			book.setOtherNotes("othernotes lorem ipsum " + i);
 			book.setReleaseYear(1999 + i);
 			books.add(book);
 		}
 		
+	}
+	
+	@Override
+	public Collection<Songbook> getSongbooks()
+			throws RepositoryConnectionFailedException,
+			RepositoryRequestFailedException, RepositoryTimeoutException {
 		return books;
-
 	}
 
 	@Override
@@ -43,8 +46,13 @@ public class MockSongbookRepository implements SongbookRepository {
 	}
 
 	@Override
-	public Songbook addSongbook(Songbook book) {
-		return book;
+	public boolean addSongbook(Songbook book) {
+		if (books.stream().anyMatch(b -> b.getId().equals(book.getId()))) {
+		    return false;
+		} else {
+		    books.add(book);
+		    return true;
+		}
 	}
 
 }

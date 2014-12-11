@@ -21,60 +21,60 @@ package fi.attemoisio.songbookapi.resource;
  * ###################################################################-
  */
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
+
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import fi.attemoisio.songbookapi.repository.SongbookRepository;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryTimeoutException;
-import fi.attemoisio.songbookapi.resource.SongbookResource;
+import fi.attemoisio.songbookapi.model.Songbook;
 
 public class SongbookResourceTest extends JerseyTest {
 
     @Override
     protected Application configure() {
-        return new ResourceConfig(SongbookResource.class);
+        return new ResourceConfig(SongbookResource.class).register(new SongbookTestApplicationBinder());
     }
 
     @Test
-    public void testGetSongbooks() throws URISyntaxException, RepositoryConnectionFailedException, RepositoryRequestFailedException, RepositoryTimeoutException {
+    public void testGetSongbooks() {
     	
-    	SongbookResource resource = new SongbookResource();
+    	final Response response = target("songbooks").request().get(); 	
+        assertEquals(response.getStatus(), 200);
+        Collection<Songbook> books = response.readEntity(new GenericType<Collection<Songbook>>(){});
+        assertTrue(!books.isEmpty());
+        
+    }
+    
+    @Test
+    public void testAddSongbook() {
     	
-    	// Test normal ok response
-    	resource.repository = new MockSongbookRepository();
-        assertEquals(200, resource.getSongbooks().getStatus());
-        
-        // Test request timeout
-        SongbookRepository r2 = mock(SongbookRepository.class);
-        when(r2.getSongbooks()).thenThrow(new RepositoryTimeoutException("Request timeout"));
-        resource.repository = r2;
-        assertEquals(408, resource.getSongbooks().getStatus());
-        
-        // Test server error
-        SongbookRepository r1 = mock(SongbookRepository.class);
-        when(r1.getSongbooks()).thenThrow(new RepositoryRequestFailedException("Server error"));
-        resource.repository = r1;
-        assertEquals(500, resource.getSongbooks().getStatus());
-
-        // Test service unavailable
-        SongbookRepository r3 = mock(SongbookRepository.class);
-        when(r3.getSongbooks()).thenThrow(new RepositoryConnectionFailedException("Service unavailable"));
-        resource.repository = r3;
-        assertEquals(503, resource.getSongbooks().getStatus());
-        
+    	Songbook book = new Songbook();
+    	book.setId("book123");
+    	book.setTitle("book title lorem ipsum");
+    	book.setOtherNotes("other notes book lorem ipsum");
+    	book.setReleaseYear(1999);
+    	book.setDescription("description lorem ipsum");
+    	
+    	Entity<Songbook> bookEntity = Entity.entity(book, MediaType.APPLICATION_JSON);
+    	final Response response = target("songbooks/").request().post(bookEntity); 	
+    	
+    	assertEquals(201, response.getStatus());
+    	
+    	book.setId("book0");
+    	bookEntity = Entity.entity(book, MediaType.APPLICATION_JSON);
+    	final Response response2 = target("songbooks/").request().post(bookEntity); 	
+    	assertEquals(409, response2.getStatus());
+    	
     }
 
 }

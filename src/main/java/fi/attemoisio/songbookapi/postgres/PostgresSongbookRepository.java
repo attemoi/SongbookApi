@@ -1,5 +1,6 @@
 package fi.attemoisio.songbookapi.postgres;
 
+import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;

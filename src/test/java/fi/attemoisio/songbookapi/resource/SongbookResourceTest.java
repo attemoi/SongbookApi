@@ -78,13 +78,13 @@ public class SongbookResourceTest extends JerseyTest {
     	
     }
     
-    @Ignore @Test
+    @Test
     public void testDeleteSongbook() {
     	
-    	final Response response = target("songbooks").path("book0").request().delete(); 	
+    	final Response response = target("songbooks/book0").request().delete(); 
         assertEquals(200, response.getStatus());
         
-        final Response response2 = target("songbooks").path("non-existent-id").request().delete(); 	
+        final Response response2 = target("songbooks/non-existent-id").request().delete(); 	
         assertEquals(404, response2.getStatus());
 
     }

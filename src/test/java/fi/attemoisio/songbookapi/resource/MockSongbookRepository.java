@@ -57,17 +57,13 @@ public class MockSongbookRepository implements SongbookRepository {
 	}
 
 	@Override
-	public boolean deleteSongbook(String id)
-			throws RepositoryConnectionFailedException,
-			RepositoryRequestFailedException,
-			RepositoryRequestTimedOutException,
-			RepositoryConnectionTimedOutException {
+	public boolean deleteSongbook(String id) {
 		
 		boolean removed = false;
 		for (Songbook book : books) {
 			if (book.getId().equals(id)) {
 				books.remove(book);
-				removed = true;
+				return true;
 			}
 		}
 		return removed;

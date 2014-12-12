@@ -27,10 +27,13 @@ import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
+import fi.attemoisio.songbookapi.exceptionhandling.ConstraintViolationExceptionMapper;
+
 public class SongbookApplication extends ResourceConfig{
 	public SongbookApplication() {
 		
 		register(new SongbookApplicationBinder());
+		register(new ConstraintViolationExceptionMapper());
 		
 		packages( 
 				"fi.attemoisio.songbookapi", 
@@ -42,7 +45,7 @@ public class SongbookApplication extends ResourceConfig{
 	    property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
 	    
 	    // Disables @ValidateOnExecution check.
-	    //property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
+	    // property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
 		
 		// Enable LoggingFilter & output entity.     
         registerInstances(new LoggingFilter(Logger.getLogger(SongbookApplication.class.getName()), true));

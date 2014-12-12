@@ -4,8 +4,9 @@ import java.util.Collection;
 
 import fi.attemoisio.songbookapi.model.Songbook;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
+import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionTimedOutException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryTimeoutException;
+import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestTimedOutException;
 
 public interface SongbookRepository {
 
@@ -15,11 +16,14 @@ public interface SongbookRepository {
 	 * @return collection containing all songbooks.
 	 * @throws RepositoryConnectionFailedException
 	 * @throws RepositoryRequestFailedException
-	 * @throws RepositoryTimeoutException
+	 * @throws RepositoryRequestTimedOutException
+	 * @throws RepositoryConnectionTimedOutException
 	 */
 	public Collection<Songbook> getSongbooks()
 			throws RepositoryConnectionFailedException,
-			RepositoryRequestFailedException, RepositoryTimeoutException;
+			RepositoryRequestFailedException,
+			RepositoryRequestTimedOutException,
+			RepositoryConnectionTimedOutException;
 
 	/**
 	 * Fetches a songbook with the given id from the repository.
@@ -28,21 +32,42 @@ public interface SongbookRepository {
 	 * @return Songbook with the given id, null if book was not found.
 	 * @throws RepositoryConnectionFailedException
 	 * @throws RepositoryRequestFailedException
-	 * @throws RepositoryTimeoutException
+	 * @throws RepositoryRequestTimedOutException
 	 */
 	public Songbook getSongbook(String id)
 			throws RepositoryConnectionFailedException,
-			RepositoryRequestFailedException, RepositoryTimeoutException;
+			RepositoryRequestFailedException,
+			RepositoryRequestTimedOutException;
 
 	/**
 	 * Adds a songbook to the repository.
 	 * 
 	 * @param book
-	 * @return true, if the book was succesfully added, false if the book with
-	 *         the same id has already been added to the repository.
+	 * @return True, if the book was successfully added. False, if the book with
+	 *         the given id already exists.
+	 * @throws RepositoryConnectionTimedOutException
 	 */
 	public boolean addSongbook(Songbook book)
 			throws RepositoryConnectionFailedException,
-			RepositoryRequestFailedException, RepositoryTimeoutException;
+			RepositoryRequestFailedException,
+			RepositoryRequestTimedOutException,
+			RepositoryConnectionTimedOutException;
+
+	/**
+	 * Deletes a songbook from the repository
+	 * 
+	 * @param id
+	 * @return True, if the book was successfully deleted. False, if the book
+	 *         with the given id was not found.
+	 * @throws RepositoryConnectionFailedException
+	 * @throws RepositoryRequestFailedException
+	 * @throws RepositoryRequestTimedOutException
+	 * @throws RepositoryConnectionTimedOutException
+	 */
+	public boolean deleteSongbook(String id)
+			throws RepositoryConnectionFailedException,
+			RepositoryRequestFailedException,
+			RepositoryRequestTimedOutException,
+			RepositoryConnectionTimedOutException;
 
 }

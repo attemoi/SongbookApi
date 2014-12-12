@@ -7,8 +7,9 @@ import java.util.List;
 import fi.attemoisio.songbookapi.model.Songbook;
 import fi.attemoisio.songbookapi.repository.SongbookRepository;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
+import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionTimedOutException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryTimeoutException;
+import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestTimedOutException;
 
 public class MockSongbookRepository implements SongbookRepository {
 
@@ -31,7 +32,7 @@ public class MockSongbookRepository implements SongbookRepository {
 	@Override
 	public Collection<Songbook> getSongbooks()
 			throws RepositoryConnectionFailedException,
-			RepositoryRequestFailedException, RepositoryTimeoutException {
+			RepositoryRequestFailedException, RepositoryRequestTimedOutException {
 		return books;
 	}
 
@@ -53,6 +54,23 @@ public class MockSongbookRepository implements SongbookRepository {
 		    books.add(book);
 		    return true;
 		}
+	}
+
+	@Override
+	public boolean deleteSongbook(String id)
+			throws RepositoryConnectionFailedException,
+			RepositoryRequestFailedException,
+			RepositoryRequestTimedOutException,
+			RepositoryConnectionTimedOutException {
+		
+		boolean removed = false;
+		for (Songbook book : books) {
+			if (book.getId().equals(id)) {
+				books.remove(book);
+				removed = true;
+			}
+		}
+		return removed;
 	}
 
 }

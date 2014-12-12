@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fi.attemoisio.songbookapi.model.Songbook;
@@ -75,6 +76,17 @@ public class SongbookResourceTest extends JerseyTest {
     	final Response response2 = target("songbooks/").request().post(bookEntity); 	
     	assertEquals(409, response2.getStatus());
     	
+    }
+    
+    @Ignore @Test
+    public void testDeleteSongbook() {
+    	
+    	final Response response = target("songbooks").path("book0").request().delete(); 	
+        assertEquals(200, response.getStatus());
+        
+        final Response response2 = target("songbooks").path("non-existent-id").request().delete(); 	
+        assertEquals(404, response2.getStatus());
+
     }
 
 }

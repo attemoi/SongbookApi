@@ -1,13 +1,11 @@
 package fi.attemoisio.songbookapi.postgres;
 
-import javax.sql.rowset.CachedRowSet;
-
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryTimeoutException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 
 public interface SQLDriverManager {
-	public CachedRowSet execQuery(String query)
-			throws RepositoryConnectionFailedException,
-			RepositoryRequestFailedException, RepositoryTimeoutException;
+	
+	public Connection getConnection() throws SQLException, SQLTimeoutException;
+
 }

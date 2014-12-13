@@ -49,6 +49,7 @@ import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
 import fi.attemoisio.songbookapi.model.Songbook;
+import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
 import fi.attemoisio.songbookapi.repository.SongbookRepository;
 import fi.attemoisio.songbookapi.validation.constraints.Slug;
@@ -63,6 +64,7 @@ public class SongbookResource {
 
 	@Inject SongbookRepository songbookRepository;
 	@Inject SongRepository songRepository;
+	@Inject ExtraVerseRepository verseRepository;
 
 	private URI getCreatedUri(String resourceId) {
 		return uriInfo.getRequestUri().resolve("songbooks").resolve(resourceId);
@@ -156,7 +158,7 @@ public class SongbookResource {
 		if (book == null)
 			throw new NotFoundException("Songbook was not found.");
 		
-		return new SongResource(uriInfo, songRepository, book.getId());
+		return new SongResource(uriInfo, songRepository, verseRepository, book.getId());
 		
 	}
 }

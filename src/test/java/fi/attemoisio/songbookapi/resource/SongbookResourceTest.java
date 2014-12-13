@@ -37,6 +37,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
 import fi.attemoisio.songbookapi.model.Songbook;
+import fi.attemoisio.songbookapi.resource.app.SongbookTestApplicationBinder;
 
 
 public class SongbookResourceTest extends JerseyTest {

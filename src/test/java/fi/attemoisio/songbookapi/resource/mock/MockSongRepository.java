@@ -1,4 +1,4 @@
-package fi.attemoisio.songbookapi.resource;
+package fi.attemoisio.songbookapi.resource.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;

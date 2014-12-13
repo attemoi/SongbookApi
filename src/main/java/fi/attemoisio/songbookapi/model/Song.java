@@ -40,7 +40,6 @@ public class Song {
 	private Integer songNumber;
 	private String otherNotes;
 	private Integer pageNum;
-//	private String bookId;
 	private String extra;
 	
 	@XmlElement(name = "id", nillable = true)
@@ -94,15 +93,6 @@ public class Song {
 	public void setPageNum(int pageNum) {
 		this.pageNum = pageNum;
 	}
-	
-//	@XmlElement(name = "bookId", nillable = false)
-//	@Slug
-//	public String getBookId() {
-//		return bookId;
-//	}
-//	public void setBookId(String bookId) {
-//		this.bookId = bookId;
-//	}
 	
 	@XmlElement(name = "extra", nillable = true)
 	@Text

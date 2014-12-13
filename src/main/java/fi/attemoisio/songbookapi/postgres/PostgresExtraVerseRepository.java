@@ -10,8 +10,8 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
+import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
-import fi.attemoisio.songbookapi.model.ExtraVerseId;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionTimedOutException;
@@ -27,10 +27,11 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 	}
 
 	@Override
-	public Collection<ExtraVerseId> getExtraVerses(String bookId, String songId) {
+	public Collection<ExtraVerse> getExtraVerses(String bookId, String songId) {
 
 		String sql = "SELECT id, lyrics, song_id, book_id"
-				+ " FROM extra_verses" + " WHERE song_id = ? AND book_id = ?";
+				+ " FROM extra_verses" 
+				+ " WHERE song_id = ? AND book_id = ?";
 		try {
 			Connection conn = driver.getConnection();
 			try {
@@ -41,10 +42,10 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 					ResultSet rs = pst.executeQuery();
 					try {
 
-						ArrayList<ExtraVerseId> verses = new ArrayList<ExtraVerseId>();
+						ArrayList<ExtraVerse> verses = new ArrayList<ExtraVerse>();
 
 						while (rs.next()) {
-							ExtraVerseId verse = new ExtraVerseId();
+							ExtraVerse verse = new ExtraVerse();
 							verse.setId(rs.getInt("id"));
 							verse.setLyrics(rs.getString("lyrics"));
 							verses.add(verse);
@@ -78,9 +79,9 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 	}
 
 	@Override
-	public ExtraVerseId getExtraVerse(String bookId, String songId,
+	public ExtraVerse getExtraVerse(String bookId, String songId,
 			Integer verseId) {
-		String sql = "SELECT id, lyrics" + " FROM extra_verses"
+		String sql = "SELECT id, lyrics, book_id, song_id, id FROM extra_verses"
 				+ " WHERE book_id = ? AND song_id = ? AND id = ?";
 		try {
 			Connection conn = driver.getConnection();
@@ -93,7 +94,7 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 					ResultSet rs = pst.executeQuery();
 					try {
 						if (rs.next()) {
-							ExtraVerseId verse = new ExtraVerseId();
+							ExtraVerse verse = new ExtraVerse();
 							verse.setId(rs.getInt("id"));
 							verse.setLyrics(rs.getString("lyrics"));
 							return verse;
@@ -125,8 +126,8 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 	}
 
 	@Override
-	public ExtraVerseId addExtraVerse(String bookId, String songId,
-			ExtraVerse verse) {
+	public ExtraVerse addExtraVerse(String bookId, String songId,
+			ExtraVersePost verse) {
 
 		final String sql = "INSERT INTO extra_verses (book_id, song_id, lyrics) "
 				+ "VALUES (?, ?, ?) RETURNING id";
@@ -143,7 +144,7 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 					ResultSet rs = pst.executeQuery();
 					try {
 						Integer generatedId = rs.getInt("id");
-						ExtraVerseId newVerse = new ExtraVerseId();
+						ExtraVerse newVerse = new ExtraVerse();
 						newVerse.setId(generatedId);
 						newVerse.setLyrics(verse.getLyrics());
 						return newVerse;
@@ -174,7 +175,8 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 	}
 
 	@Override
-	public boolean deleteExtraVerse(String bookId, String songId, Integer verseId) {
+	public boolean deleteExtraVerse(String bookId, String songId,
+			Integer verseId) {
 
 		final String sql = "DELETE FROM extra_verses WHERE id = ? AND song_id = ? and book_id = ?";
 
@@ -189,7 +191,8 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 					int affectedRows = pst.executeUpdate();
 					return affectedRows > 0;
 				} catch (SQLTimeoutException e) {
-					throw new RepositoryRequestTimedOutException("Verse delete request timed out.");
+					throw new RepositoryRequestTimedOutException(
+							"Verse delete request timed out.");
 				} finally {
 					pst.close();
 				}

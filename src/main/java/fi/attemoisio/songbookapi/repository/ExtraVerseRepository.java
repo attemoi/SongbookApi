@@ -2,8 +2,8 @@ package fi.attemoisio.songbookapi.repository;
 
 import java.util.Collection;
 
+import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
-import fi.attemoisio.songbookapi.model.ExtraVerseId;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionTimedOutException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
@@ -20,7 +20,7 @@ public interface ExtraVerseRepository {
 	 * @throws RepositoryRequestTimedOutException
 	 * @throws RepositoryConnectionTimedOutException
 	 */
-	public Collection<ExtraVerseId> getExtraVerses(String bookId, String songId);
+	public Collection<ExtraVerse> getExtraVerses(String bookId, String songId);
 
 	/**
 	 * Fetches an extra verse for a song.
@@ -34,7 +34,7 @@ public interface ExtraVerseRepository {
 	 * @throws RepositoryRequestTimedOutException
 	 * @throws RepositoryConnectionTimedOutException
 	 */
-	public ExtraVerseId getExtraVerse(String bookId, String songId,
+	public ExtraVerse getExtraVerse(String bookId, String songId,
 			Integer extraVerseId);
 
 	/**
@@ -50,7 +50,7 @@ public interface ExtraVerseRepository {
 	 * @throws RepositoryRequestTimedOutException
 	 * @throws RepositoryConnectionTimedOutException
 	 */
-	public ExtraVerseId addExtraVerse(String bookId, String songId, ExtraVerse verse);
+	public ExtraVerse addExtraVerse(String bookId, String songId, ExtraVersePost verse);
 
 	/**
 	 * Deletes an extra verse from the repository

@@ -9,18 +9,18 @@ import fi.attemoisio.songbookapi.validation.constraints.Text;
 
 @XmlRootElement(name = "ExtraVerse")
 @ApiModel(description = "Extra verse model")
-public class ExtraVerse {
-	
-	private String lyrics;
+public class ExtraVerse extends ExtraVersePost {
 
-	@XmlElement(name = "lyrics", nillable = false)
+	private Integer id;
+
+	@XmlElement(name = "id", nillable = false)
 	@Text
-	public String getLyrics() {
-		return lyrics;
+	public Integer getId() {
+		return id;
 	}
-	
-	public void setLyrics(String lyrics) {
-		this.lyrics = lyrics;
-	}	
-	
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 }

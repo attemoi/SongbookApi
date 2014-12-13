@@ -7,7 +7,7 @@ import java.util.List;
 public class SongEntity {
 
 	private Song song;
-	private List<ExtraVerseId> extraVerses = new ArrayList<ExtraVerseId>();
+	private List<ExtraVerse> extraVerses = new ArrayList<ExtraVerse>();
 
 	public Song getSong() {
 		return song;
@@ -16,10 +16,10 @@ public class SongEntity {
 		this.song = song;
 	}
 	
-	public Collection<ExtraVerseId> getExtraVerses() {
+	public Collection<ExtraVerse> getExtraVerses() {
 		return extraVerses;
 	}
-	public void addExtraVerses(ExtraVerseId verse) {
+	public void addExtraVerses(ExtraVerse verse) {
 		this.extraVerses.add(verse);
 	}
 	

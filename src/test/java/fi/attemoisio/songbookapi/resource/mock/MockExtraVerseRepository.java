@@ -7,29 +7,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
-import fi.attemoisio.songbookapi.model.ExtraVerseId;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 
 public class MockExtraVerseRepository implements ExtraVerseRepository {
 	
-	Map<String, HashMap<String, List<ExtraVerseId>>> bookMap;
+	Map<String, HashMap<String, List<ExtraVerse>>> bookMap;
 	
 	private final AtomicInteger idSequence = new AtomicInteger(5);
 	
 	public MockExtraVerseRepository() {
 
-			bookMap = new HashMap<String, HashMap<String, List<ExtraVerseId>>>();
+			bookMap = new HashMap<String, HashMap<String, List<ExtraVerse>>>();
 			
 			for (int j = 0; j < 5; j++){
 				String bookId = "book" + j;
-				HashMap<String, List<ExtraVerseId>> songMap = new HashMap<String, List<ExtraVerseId>>();
+				HashMap<String, List<ExtraVerse>> songMap = new HashMap<String, List<ExtraVerse>>();
 				for (int i = 0; i < 5; i++) {
 					String songId = "song" + i;
 					
-					List<ExtraVerseId> verses = new ArrayList<ExtraVerseId>();
+					List<ExtraVerse> verses = new ArrayList<ExtraVerse>();
 					for (int k = 0; k < 5; k++) {
-						ExtraVerseId verse = new ExtraVerseId();
+						ExtraVerse verse = new ExtraVerse();
 						verse.setId(i);
 						verse.setLyrics("lorem ipsum " + i);
 						verses.add(verse);
@@ -42,15 +42,15 @@ public class MockExtraVerseRepository implements ExtraVerseRepository {
 	}
 	
 	@Override
-	public Collection<ExtraVerseId> getExtraVerses(String bookId, String songId) {
-		Collection<ExtraVerseId> verses = bookMap.get(bookId).get(songId);
+	public Collection<ExtraVerse> getExtraVerses(String bookId, String songId) {
+		Collection<ExtraVerse> verses = bookMap.get(bookId).get(songId);
 		return verses;
 	}
 
 	@Override
-	public ExtraVerseId getExtraVerse(String bookId, String songId, Integer verseId) {
-		Collection<ExtraVerseId> verses = bookMap.get(bookId).get(songId);
-		for (ExtraVerseId verse : verses) {
+	public ExtraVerse getExtraVerse(String bookId, String songId, Integer verseId) {
+		Collection<ExtraVerse> verses = bookMap.get(bookId).get(songId);
+		for (ExtraVerse verse : verses) {
 			if (verse.getId().equals(verseId))
 				return verse;
 		}
@@ -58,9 +58,9 @@ public class MockExtraVerseRepository implements ExtraVerseRepository {
 	}
 
 	@Override
-	public ExtraVerseId addExtraVerse(String bookId, String songId, ExtraVerse verse) {
-		Collection<ExtraVerseId> verses = bookMap.get(bookId).get(songId);
-		ExtraVerseId newVerse = new ExtraVerseId();
+	public ExtraVerse addExtraVerse(String bookId, String songId, ExtraVersePost verse) {
+		Collection<ExtraVerse> verses = bookMap.get(bookId).get(songId);
+		ExtraVerse newVerse = new ExtraVerse();
 		newVerse.setId(idSequence.getAndIncrement());
 		newVerse.setLyrics(verse.getLyrics());
 		verses.add(newVerse);
@@ -69,9 +69,9 @@ public class MockExtraVerseRepository implements ExtraVerseRepository {
 
 	@Override
 	public boolean deleteExtraVerse(String bookId, String songId, Integer verseId) {
-		Collection<ExtraVerseId> verses = bookMap.get(bookId).get(songId);
+		Collection<ExtraVerse> verses = bookMap.get(bookId).get(songId);
 		
-		for (ExtraVerseId verse : verses) {
+		for (ExtraVerse verse : verses) {
 			if (verse.getId().equals(verseId)) {
 				verses.remove(verse);
 				return true;

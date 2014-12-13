@@ -27,8 +27,8 @@ import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
+import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
-import fi.attemoisio.songbookapi.model.ExtraVerseId;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 
 @RequestScoped
@@ -53,7 +53,7 @@ public class ExtraVerseResource {
 	}
 
 	@GET
-	@ApiOperation(value = "List all extra verses for a song", notes = "Returns a list of all extra verses for a song.", response = ExtraVerseId.class, responseContainer = "List")
+	@ApiOperation(value = "List all extra verses for a song", notes = "Returns a list of all extra verses for a song.", response = ExtraVerse.class, responseContainer = "List")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Request completed succesfully"),
 			@ApiResponse(code = 204, message = "No verses found"),
@@ -62,14 +62,14 @@ public class ExtraVerseResource {
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	public Response getExtraVerses() throws NoContentException {
 
-		Collection<ExtraVerseId> extraVerses;
+		Collection<ExtraVerse> extraVerses;
 
 		extraVerses = verseRepository.getExtraVerses(bookId, songId);
 
 		if (extraVerses.isEmpty())
 			throw new NoContentException("No extra verses found");
 
-		GenericEntity<Collection<ExtraVerseId>> entity = new GenericEntity<Collection<ExtraVerseId>>(
+		GenericEntity<Collection<ExtraVerse>> entity = new GenericEntity<Collection<ExtraVerse>>(
 				extraVerses) {
 		};
 		return Response.ok(entity).build();
@@ -84,9 +84,9 @@ public class ExtraVerseResource {
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	@Consumes("application/json")
 	public Response addExtraVerse(
-			@ApiParam(value = "Verse to be added", required = true) @Valid ExtraVerse verse) {
+			@ApiParam(value = "Verse to be added", required = true) @Valid ExtraVersePost verse) {
 
-		ExtraVerseId addedVerse = verseRepository.addExtraVerse(bookId, songId, verse);
+		ExtraVerse addedVerse = verseRepository.addExtraVerse(bookId, songId, verse);
 		
 		return Response.created(getCreatedUri(addedVerse.getId().toString())).entity(addedVerse)
 				.build();
@@ -118,9 +118,9 @@ public class ExtraVerseResource {
 	@GET
 	@ApiOperation(value = "Get data for extra verse")
 	@Path("/{verse_id}")
-	public Response getSong(@Min(0) @PathParam("verse_id") Integer verseId) {
+	public Response getExtraVerse(@Min(0) @PathParam("verse_id") Integer verseId) {
 
-		ExtraVerseId verse = verseRepository.getExtraVerse(bookId, songId, verseId);
+		ExtraVerse verse = verseRepository.getExtraVerse(bookId, songId, verseId);
 
 		if (verse == null)
 			throw new NotFoundException("Verse was not found.");

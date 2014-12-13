@@ -36,8 +36,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
+import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
-import fi.attemoisio.songbookapi.model.ExtraVerseId;
 import fi.attemoisio.songbookapi.resource.app.SongbookTestApplicationBinder;
 
 public class ExtraVerseResourceTest extends JerseyTest {
@@ -53,7 +53,7 @@ public class ExtraVerseResourceTest extends JerseyTest {
     	final Response response = target("songbooks/book0/songs/song0/extra-verses").request().get(); 	
         assertEquals(200, response.getStatus());
         
-        Collection<ExtraVerseId> verses = response.readEntity(new GenericType<Collection<ExtraVerseId>>(){});
+        Collection<ExtraVerse> verses = response.readEntity(new GenericType<Collection<ExtraVerse>>(){});
         assertEquals(5, verses.size());
         
     }
@@ -64,7 +64,7 @@ public class ExtraVerseResourceTest extends JerseyTest {
     	final Response response = target("songbooks/book0/songs/song0/extra-verses/0").request().get(); 	
         assertEquals(200, response.getStatus());
         
-        ExtraVerseId verse = response.readEntity(ExtraVerseId.class);
+        ExtraVerse verse = response.readEntity(ExtraVerse.class);
         assertTrue(verse != null);
         
         final Response response2 = target("songbooks/book0/songs/song0/extra-verses/9998").request().get(); 	
@@ -75,10 +75,10 @@ public class ExtraVerseResourceTest extends JerseyTest {
     @Test
     public void testAddExtraVerse() {
     	
-    	ExtraVerse verse = new ExtraVerse();
+    	ExtraVersePost verse = new ExtraVersePost();
     	verse.setLyrics("asdf");
     	
-    	Entity<ExtraVerse> verseEntity = Entity.entity(verse, MediaType.APPLICATION_JSON);
+    	Entity<ExtraVersePost> verseEntity = Entity.entity(verse, MediaType.APPLICATION_JSON);
     	final Response response = target("songbooks/book0/songs/song0/extra-verses").request().post(verseEntity); 	
     	
     	assertEquals(201, response.getStatus());

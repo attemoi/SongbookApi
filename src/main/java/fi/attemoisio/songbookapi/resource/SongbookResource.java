@@ -49,23 +49,20 @@ import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
 import fi.attemoisio.songbookapi.model.Songbook;
+import fi.attemoisio.songbookapi.repository.SongRepository;
 import fi.attemoisio.songbookapi.repository.SongbookRepository;
 import fi.attemoisio.songbookapi.validation.constraints.Slug;
+
 
 @Path("songbooks")
 @Api(value = "songbooks", description = "Operations about songbooks")
 @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
 public class SongbookResource {
 
-	@Context
-	UriInfo uriInfo;
+	@Context UriInfo uriInfo;
 
-	SongbookRepository repository;
-
-	@Inject
-	public SongbookResource(SongbookRepository repository) {
-		this.repository = repository;
-	}
+	@Inject SongbookRepository songbookRepository;
+	@Inject SongRepository songRepository;
 
 	private URI getCreatedUri(String resourceId) {
 		return uriInfo.getRequestUri().resolve("songbooks").resolve(resourceId);
@@ -83,7 +80,7 @@ public class SongbookResource {
 
 		Collection<Songbook> books;
 
-		books = repository.getSongbooks();
+		books = songbookRepository.getSongbooks();
 
 		if (books.isEmpty())
 			throw new NoContentException("No songbooks found");
@@ -106,7 +103,7 @@ public class SongbookResource {
 	public Response addSongbook(
 			@ApiParam(value = "Songbook to be added", required = true) @Valid Songbook book) {
 
-		if (repository.addSongbook(book)) {
+		if (songbookRepository.addSongbook(book)) {
 			return Response.created(getCreatedUri(book.getId())).entity(book)
 					.build();
 		} else {
@@ -116,8 +113,8 @@ public class SongbookResource {
 	}
 
 	@DELETE
-	@Path("/{id}")
-	@ApiOperation(value = "Delete a songbook (json)")
+	@Path("/{book_id}")
+	@ApiOperation(value = "Delete a songbook")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Songbook deleted succesfully"),
 			@ApiResponse(code = 400, message = "Invalid input"),
@@ -125,9 +122,9 @@ public class SongbookResource {
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	public Response deleteSongbook(
-			@ApiParam(value = "Id of songbook to delete", required = true) @Slug @PathParam("id") String id) {
+			@ApiParam(value = "Id of songbook to delete", required = true) @Slug @PathParam("book_id") String bookId) {
 
-		if (repository.deleteSongbook(id)) {
+		if (songbookRepository.deleteSongbook(bookId)) {
 			return Response.ok("Songbook deleted succesfully")
 					.type(MediaType.TEXT_PLAIN).build();
 		} else {
@@ -135,5 +132,31 @@ public class SongbookResource {
 					"Could not delete songbook (id not found).");
 		}
 
+	}
+	
+	@GET
+	@ApiOperation(value = "Get songbook info")
+	@Path("/{book_id}")
+	public Response getSongbook(@Slug @PathParam("book_id") String bookId) {
+		
+		Songbook book = songbookRepository.getSongbook(bookId);
+		
+		if (book == null)
+			throw new NotFoundException("Songbook not found.");
+		
+		return Response.ok(book).build();
+		
+	}
+	
+	@Path("/{book_id}/songs")
+	public SongResource locateToSongResource(@Slug @PathParam("book_id") String bookId) {
+		
+		Songbook book = songbookRepository.getSongbook(bookId);
+		
+		if (book == null)
+			throw new NotFoundException("Songbook was not found.");
+		
+		return new SongResource(uriInfo, songRepository, book.getId());
+		
 	}
 }

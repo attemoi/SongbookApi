@@ -2,16 +2,16 @@ package fi.attemoisio.songbookapi.repository;
 
 import java.util.Collection;
 
-import fi.attemoisio.songbookapi.model.Songbook;
+import fi.attemoisio.songbookapi.model.Song;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionTimedOutException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestTimedOutException;
 
-public interface SongbookRepository {
+public interface SongRepository {
 
 	/**
-	 * Fetches all songbooks from the repository.
+	 * Fetches all songs from a book.
 	 * 
 	 * @return collection containing all songbooks.
 	 * @throws RepositoryConnectionFailedException
@@ -19,44 +19,46 @@ public interface SongbookRepository {
 	 * @throws RepositoryRequestTimedOutException
 	 * @throws RepositoryConnectionTimedOutException
 	 */
-	public Collection<Songbook> getSongbooks();
+	public Collection<Song> getSongs(String bookId);
 
 	/**
-	 * Fetches a songbook with the given id from the repository.
+	 * Fetches a single song.
 	 * 
-	 * @param id
-	 * @return Songbook with the given id, null if book was not found.
+	 * @param bookId
+	 * @param songId
+	 * @return Song with the given id, null if song was not found.
 	 * @throws RepositoryConnectionFailedException
 	 * @throws RepositoryRequestFailedException
 	 * @throws RepositoryRequestTimedOutException
 	 * @throws RepositoryConnectionTimedOutException
 	 */
-	public Songbook getSongbook(String id);
+	public Song getSong(String bookId, String songId);
 
 	/**
-	 * Adds a songbook to the repository.
+	 * Adds a song.
 	 * 
-	 * @param book
-	 * @return True, if the book was successfully added. False, if the book with
+	 * @param bookId
+	 * @param song
+	 * @return True, if the song was successfully added. False, if a song with
 	 *         the given id already exists.
 	 * @throws RepositoryConnectionFailedException
 	 * @throws RepositoryRequestFailedException
 	 * @throws RepositoryRequestTimedOutException
 	 * @throws RepositoryConnectionTimedOutException
 	 */
-	public boolean addSongbook(Songbook book);
+	public boolean addSong(String bookId, Song song);
 
 	/**
-	 * Deletes a songbook from the repository
+	 * Deletes a song from the repository
 	 * 
 	 * @param id
-	 * @return True, if the book was successfully deleted. False, if the book
+	 * @return True, if the song was successfully deleted. False, if the song
 	 *         with the given id was not found.
 	 * @throws RepositoryConnectionFailedException
 	 * @throws RepositoryRequestFailedException
 	 * @throws RepositoryRequestTimedOutException
 	 * @throws RepositoryConnectionTimedOutException
 	 */
-	public boolean deleteSongbook(String id);
+	public boolean deleteSong(String bookId, String id);
 
 }

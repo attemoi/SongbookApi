@@ -28,26 +28,23 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
 import fi.attemoisio.songbookapi.exceptionhandling.ConstraintViolationExceptionMapper;
+import fi.attemoisio.songbookapi.exceptionhandling.RestExceptionMapper;
 
-public class SongbookApplication extends ResourceConfig{
+public class SongbookApplication extends ResourceConfig {
 	public SongbookApplication() {
-		
+
 		register(new SongbookApplicationBinder());
 		register(new ConstraintViolationExceptionMapper());
-		
-		packages( 
-				"fi.attemoisio.songbookapi", 
+		register(new RestExceptionMapper());
+
+		packages("fi.attemoisio.songbookapi",
 				"com.wordnik.swagger.jersey.listing");
-		
-		// VALIDATION
 
 		// Enables sending validation errors in response entity to the client.
-	    property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
-	    
-	    // Disables @ValidateOnExecution check.
-	    // property(ServerProperties.BV_DISABLE_VALIDATE_ON_EXECUTABLE_OVERRIDE_CHECK, true);
-		
-		// Enable LoggingFilter & output entity.     
-        registerInstances(new LoggingFilter(Logger.getLogger(SongbookApplication.class.getName()), true));
+		property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
+
+		// Enable LoggingFilter & output entity.
+		registerInstances(new LoggingFilter(
+				Logger.getLogger(SongbookApplication.class.getName()), true));
 	}
 }

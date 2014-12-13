@@ -36,10 +36,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
-import fi.attemoisio.songbookapi.model.Songbook;
+import fi.attemoisio.songbookapi.model.Song;
 
-
-public class SongbookResourceTest extends JerseyTest {
+public class SongResourceTest extends JerseyTest {
 
     @Override
     protected Application configure() {
@@ -47,25 +46,26 @@ public class SongbookResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testGetSongbooks() {
+    public void testGetSongs() {
     	
-    	final Response response = target("songbooks").request().get(); 	
-        assertEquals(response.getStatus(), 200);
-        Collection<Songbook> books = response.readEntity(new GenericType<Collection<Songbook>>(){});
-        assertTrue(!books.isEmpty());
+    	final Response response = target("songbooks/book0/songs").request().get(); 	
+        assertEquals(200, response.getStatus());
+        
+        Collection<Song> songs = response.readEntity(new GenericType<Collection<Song>>(){});
+        assertEquals(5, songs.size());
         
     }
     
     @Test
-    public void testGetSongbook() {
+    public void testGetSong() {
     	
-    	final Response response = target("songbooks/book0").request().get(); 	
+    	final Response response = target("songbooks/book0/songs/song0").request().get(); 	
         assertEquals(200, response.getStatus());
         
-        Songbook book = response.readEntity(Songbook.class);
-        assertTrue(book != null);
+        Song song = response.readEntity(Song.class);
+        assertTrue(song != null);
         
-        final Response response2 = target("songbooks/non-existent-book").request().get(); 	
+        final Response response2 = target("songbooks/book0/songs/non-existent-songs").request().get(); 	
         assertEquals(404, response2.getStatus());
         
     }
@@ -73,21 +73,23 @@ public class SongbookResourceTest extends JerseyTest {
     @Test
     public void testAddSongbook() {
     	
-    	Songbook book = new Songbook();
-    	book.setId("book123");
-    	book.setTitle("book title lorem ipsum");
-    	book.setOtherNotes("other notes book lorem ipsum");
-    	book.setReleaseYear(1999);
-    	book.setDescription("description lorem ipsum");
+    	Song song = new Song();
+    	song.setId("song123");
+    	song.setName("song name lorem ipsum");
+    	song.setExtra("asdf");
+    	song.setLyrics("asdf");
+    	song.setPageNum(234);
+    	song.setSongNumber(123);
+    	song.setOtherNotes("asdf");
     	
-    	Entity<Songbook> bookEntity = Entity.entity(book, MediaType.APPLICATION_JSON);
-    	final Response response = target("songbooks/").request().post(bookEntity); 	
+    	Entity<Song> songEntity = Entity.entity(song, MediaType.APPLICATION_JSON);
+    	final Response response = target("songbooks/book0/songs").request().post(songEntity); 	
     	
     	assertEquals(201, response.getStatus());
     	
-    	book.setId("book0");
-    	bookEntity = Entity.entity(book, MediaType.APPLICATION_JSON);
-    	final Response response2 = target("songbooks/").request().post(bookEntity); 	
+    	song.setId("song0");
+    	songEntity = Entity.entity(song, MediaType.APPLICATION_JSON);
+    	final Response response2 = target("songbooks/book0/songs").request().post(songEntity); 	
     	assertEquals(409, response2.getStatus());
     	
     }
@@ -95,10 +97,10 @@ public class SongbookResourceTest extends JerseyTest {
     @Test
     public void testDeleteSongbook() {
     	
-    	final Response response = target("songbooks/book0").request().delete(); 
+    	final Response response = target("songbooks/book0/songs/song0").request().delete(); 
         assertEquals(200, response.getStatus());
         
-        final Response response2 = target("songbooks/non-existent-id").request().delete(); 	
+        final Response response2 = target("songbooks/book0/songs/non-existent-id").request().delete(); 	
         assertEquals(404, response2.getStatus());
 
     }

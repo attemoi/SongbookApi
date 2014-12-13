@@ -2,6 +2,7 @@ package fi.attemoisio.songbookapi.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import com.wordnik.swagger.annotations.ApiModel;
 
@@ -9,6 +10,7 @@ import fi.attemoisio.songbookapi.validation.constraints.Text;
 
 @XmlRootElement(name = "ExtraVerse")
 @ApiModel(description = "Extra verse model")
+@XmlType(name="")
 public class ExtraVersePost {
 	
 	private String lyrics;

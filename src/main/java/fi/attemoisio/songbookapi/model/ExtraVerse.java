@@ -1,14 +1,11 @@
 package fi.attemoisio.songbookapi.model;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import com.wordnik.swagger.annotations.ApiModel;
+import javax.xml.bind.annotation.XmlType;
 
 import fi.attemoisio.songbookapi.validation.constraints.Text;
 
-@XmlRootElement(name = "ExtraVerse")
-@ApiModel(description = "Extra verse model")
+@XmlType(name="")
 public class ExtraVerse extends ExtraVersePost {
 
 	private Integer id;

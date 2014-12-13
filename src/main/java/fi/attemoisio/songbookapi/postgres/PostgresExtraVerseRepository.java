@@ -12,9 +12,7 @@ import javax.inject.Inject;
 
 import fi.attemoisio.songbookapi.model.ExtraVerse;
 import fi.attemoisio.songbookapi.model.ExtraVerseId;
-import fi.attemoisio.songbookapi.model.Song;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
-import fi.attemoisio.songbookapi.repository.SongRepository;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionTimedOutException;
 import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
@@ -28,228 +26,187 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 		super(driver);
 	}
 
-//	@Override
-//	public Collection<Song> getSongs(String bookId) {
-//
-//		String sql = "SELECT id, name, extra, lyrics, song_number, other_notes, page_num, book_id"
-//				+ " FROM songs"
-//				+ " WHERE book_id = ?";
-//		try {
-//			Connection conn = driver.getConnection();
-//			try {
-//				PreparedStatement pst = conn.prepareStatement(sql);
-//				pst.setString(1, bookId);
-//				try {
-//					ResultSet rs = pst.executeQuery();
-//					try {
-//
-//						ArrayList<Song> songs = new ArrayList<Song>();
-//
-//						while (rs.next()) {
-//							Song song = new Song();
-//							song.setId(rs.getString("id"));
-//							song.setName(rs.getString("name"));
-//							song.setLyrics(rs.getString("lyrics"));
-//							song.setPageNum(rs.getInt("page_num"));
-//							song.setExtra(rs.getString("extra"));
-//							song.setSongNumber(rs.getInt("song_number"));
-//							song.setOtherNotes(rs.getString("other_notes"));
-//							songs.add(song);
-//						}
-//
-//						return songs;
-//
-//					} finally {
-//						rs.close();
-//					}
-//				} catch (SQLTimeoutException e) {
-//					throw new RepositoryRequestTimedOutException(
-//							"Song list request timed out");
-//				} finally {
-//					pst.close();
-//				}
-//			} catch (SQLException e) {
-//				throw new RepositoryRequestFailedException(
-//						"Failed to request song list");
-//			} finally {
-//				conn.close();
-//			}
-//		} catch (SQLTimeoutException e) {
-//			throw new RepositoryConnectionTimedOutException(
-//					"Song repository connection timed out");
-//		} catch (SQLException e) {
-//			throw new RepositoryConnectionFailedException(
-//					"Song repository connection failed");
-//		}
-//
-//	}
-//
-//	@Override
-//	public Song getSong(String bookId, String songId) {
-//		String sql = "SELECT id, name, extra, lyrics, song_number, other_notes, page_num, book_id"
-//				+ " FROM songs"
-//				+ " WHERE id = ? AND book_id = ?";
-//		try {
-//			Connection conn = driver.getConnection();
-//			try {
-//				PreparedStatement pst = conn.prepareStatement(sql);
-//				pst.setString(1, songId);
-//				pst.setString(2, bookId);
-//				try {
-//					ResultSet rs = pst.executeQuery();
-//					try {
-//
-//						ArrayList<Song> songs = new ArrayList<Song>();
-//
-//						if (rs.next()) {
-//							Song song = new Song();
-//							song.setId(rs.getString("id"));
-//							song.setName(rs.getString("name"));
-//							song.setLyrics(rs.getString("lyrics"));
-//							song.setPageNum(rs.getInt("page_num"));
-//							song.setExtra(rs.getString("extra"));
-//							song.setSongNumber(rs.getInt("song_number"));
-//							song.setOtherNotes(rs.getString("other_notes"));
-//							songs.add(song);
-//							return song;
-//						}
-//
-//						return null;
-//
-//					} finally {
-//						rs.close();
-//					}
-//				} catch (SQLTimeoutException e) {
-//					throw new RepositoryRequestTimedOutException(
-//							"Song request timed out");
-//				} finally {
-//					pst.close();
-//				}
-//			} catch (SQLException e) {
-//				throw new RepositoryRequestFailedException(
-//						"Failed to request song");
-//			} finally {
-//				conn.close();
-//			}
-//		} catch (SQLTimeoutException e) {
-//			throw new RepositoryConnectionTimedOutException(
-//					"Song repository connection timed out");
-//		} catch (SQLException e) {
-//			throw new RepositoryConnectionFailedException(
-//					"Song repository connection failed");
-//		}
-//	}
-//
-//	@Override
-//	public boolean addSong(String bookId, Song book) {
-//
-//		final String sql = 
-//				"INSERT INTO songs (id, name, extra, lyrics, song_number, other_notes, page_num, book_id) " + 
-//				"VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-//
-//		try {
-//			Connection conn = driver.getConnection();
-//			try {
-//				PreparedStatement pst = conn.prepareStatement(sql);
-//				try {
-//					pst.setString(1, book.getId());
-//					pst.setString(2, book.getName());
-//					pst.setString(3, book.getExtra());
-//					pst.setString(4, book.getLyrics());
-//					pst.setInt(5, book.getSongNumber());
-//					pst.setString(6, book.getOtherNotes());
-//					pst.setInt(7, book.getPageNum());
-//					pst.setString(8, bookId);
-//
-//					pst.execute();
-//					return true;
-//
-//				} catch (SQLTimeoutException e) {
-//					throw new RepositoryRequestTimedOutException(
-//							"Songbook add request timed out.");
-//				} finally {
-//					pst.close();
-//				}
-//			} catch (SQLException e) {
-//				if (e.getSQLState().equals("23505")) // POSTGRESQL error code
-//														// for unique_violation
-//					return false;
-//				else
-//					throw new RepositoryRequestFailedException(
-//							"Failed to add songbook.");
-//			} finally {
-//				conn.close();
-//			}
-//		} catch (SQLTimeoutException e) {
-//			throw new RepositoryConnectionTimedOutException(
-//					"Songbook repository connection timed out.");
-//		} catch (SQLException e) {
-//			throw new RepositoryConnectionFailedException(
-//					"Failed to establish connection to songbook repository.");
-//		}
-//
-//	}
-//
-//	@Override
-//	public boolean deleteSong(String bookId, String songId) {
-//
-//		final String sql = "DELETE FROM songs WHERE id = ? AND book_id = ?";
-//
-//		try {
-//			Connection conn = driver.getConnection();
-//			try {
-//				PreparedStatement pst = conn.prepareStatement(sql);
-//				try {
-//					pst.setString(1, songId);
-//					pst.setString(2, bookId);
-//					int affectedRows = pst.executeUpdate();
-//					return affectedRows > 0;
-//				} catch (SQLTimeoutException e) {
-//					throw new RepositoryRequestTimedOutException(
-//							"Song delete request timed out.");
-//				} finally {
-//					pst.close();
-//				}
-//			} catch (SQLException e) {
-//				throw new RepositoryRequestFailedException(
-//						"Failed to delete song.");
-//			} finally {
-//				conn.close();
-//			}
-//		} catch (SQLTimeoutException e) {
-//			throw new RepositoryConnectionTimedOutException(
-//					"Song repository connection timed out.");
-//		} catch (SQLException e) {
-//			throw new RepositoryConnectionFailedException(
-//					"Failed to establish connection to song repository.");
-//		}
-//
-//	}
-
 	@Override
 	public Collection<ExtraVerseId> getExtraVerses(String bookId, String songId) {
-		// TODO Auto-generated method stub
-		return null;
+
+		String sql = "SELECT id, lyrics, song_id, book_id"
+				+ " FROM extra_verses" + " WHERE song_id = ? AND book_id = ?";
+		try {
+			Connection conn = driver.getConnection();
+			try {
+				PreparedStatement pst = conn.prepareStatement(sql);
+				pst.setString(1, songId);
+				pst.setString(2, bookId);
+				try {
+					ResultSet rs = pst.executeQuery();
+					try {
+
+						ArrayList<ExtraVerseId> verses = new ArrayList<ExtraVerseId>();
+
+						while (rs.next()) {
+							ExtraVerseId verse = new ExtraVerseId();
+							verse.setId(rs.getInt("id"));
+							verse.setLyrics(rs.getString("lyrics"));
+							verses.add(verse);
+						}
+
+						return verses;
+
+					} finally {
+						rs.close();
+					}
+				} catch (SQLTimeoutException e) {
+					throw new RepositoryRequestTimedOutException(
+							"Verse list request timed out");
+				} finally {
+					pst.close();
+				}
+			} catch (SQLException e) {
+				throw new RepositoryRequestFailedException(
+						"Failed to request list of verses");
+			} finally {
+				conn.close();
+			}
+		} catch (SQLTimeoutException e) {
+			throw new RepositoryConnectionTimedOutException(
+					"Verse repository connection timed out");
+		} catch (SQLException e) {
+			throw new RepositoryConnectionFailedException(
+					"Verse repository connection failed");
+		}
+
 	}
 
 	@Override
 	public ExtraVerseId getExtraVerse(String bookId, String songId,
-			Integer extraVerseId) {
-		// TODO Auto-generated method stub
-		return null;
+			Integer verseId) {
+		String sql = "SELECT id, lyrics" + " FROM extra_verses"
+				+ " WHERE book_id = ? AND song_id = ? AND id = ?";
+		try {
+			Connection conn = driver.getConnection();
+			try {
+				PreparedStatement pst = conn.prepareStatement(sql);
+				pst.setString(1, bookId);
+				pst.setString(2, songId);
+				pst.setInt(3, verseId);
+				try {
+					ResultSet rs = pst.executeQuery();
+					try {
+						if (rs.next()) {
+							ExtraVerseId verse = new ExtraVerseId();
+							verse.setId(rs.getInt("id"));
+							verse.setLyrics(rs.getString("lyrics"));
+							return verse;
+						} else {
+							return null;
+						}
+					} finally {
+						rs.close();
+					}
+				} catch (SQLTimeoutException e) {
+					throw new RepositoryRequestTimedOutException(
+							"Verse request timed out");
+				} finally {
+					pst.close();
+				}
+			} catch (SQLException e) {
+				throw new RepositoryRequestFailedException(
+						"Failed to request verse data");
+			} finally {
+				conn.close();
+			}
+		} catch (SQLTimeoutException e) {
+			throw new RepositoryConnectionTimedOutException(
+					"Verse repository connection timed out");
+		} catch (SQLException e) {
+			throw new RepositoryConnectionFailedException(
+					"Verse repository connection failed");
+		}
 	}
 
 	@Override
 	public ExtraVerseId addExtraVerse(String bookId, String songId,
 			ExtraVerse verse) {
-		// TODO Auto-generated method stub
-		return null;
+
+		final String sql = "INSERT INTO extra_verses (book_id, song_id, lyrics) "
+				+ "VALUES (?, ?, ?) RETURNING id";
+
+		try {
+			Connection conn = driver.getConnection();
+			try {
+				PreparedStatement pst = conn.prepareStatement(sql);
+				try {
+					pst.setString(1, bookId);
+					pst.setString(2, songId);
+					pst.setString(3, verse.getLyrics());
+
+					ResultSet rs = pst.executeQuery();
+					try {
+						Integer generatedId = rs.getInt("id");
+						ExtraVerseId newVerse = new ExtraVerseId();
+						newVerse.setId(generatedId);
+						newVerse.setLyrics(verse.getLyrics());
+						return newVerse;
+					} finally {
+						rs.close();
+					}
+
+				} catch (SQLTimeoutException e) {
+					throw new RepositoryRequestTimedOutException(
+							"Verse add request timed out.");
+				} finally {
+					pst.close();
+				}
+			} catch (SQLException e) {
+				throw new RepositoryRequestFailedException(
+						"Failed to add verse.");
+			} finally {
+				conn.close();
+			}
+		} catch (SQLTimeoutException e) {
+			throw new RepositoryConnectionTimedOutException(
+					"Verse repository connection timed out.");
+		} catch (SQLException e) {
+			throw new RepositoryConnectionFailedException(
+					"Failed to establish connection to verse repository.");
+		}
+
 	}
 
 	@Override
-	public boolean deleteExtraVerse(String bookId, String songId,
-			Integer verseId) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean deleteExtraVerse(String bookId, String songId, Integer verseId) {
+
+		final String sql = "DELETE FROM extra_verses WHERE id = ? AND song_id = ? and book_id = ?";
+
+		try {
+			Connection conn = driver.getConnection();
+			try {
+				PreparedStatement pst = conn.prepareStatement(sql);
+				try {
+					pst.setInt(1, verseId);
+					pst.setString(2, songId);
+					pst.setString(3, bookId);
+					int affectedRows = pst.executeUpdate();
+					return affectedRows > 0;
+				} catch (SQLTimeoutException e) {
+					throw new RepositoryRequestTimedOutException("Verse delete request timed out.");
+				} finally {
+					pst.close();
+				}
+			} catch (SQLException e) {
+				throw new RepositoryRequestFailedException(
+						"Failed to delete verse.");
+			} finally {
+				conn.close();
+			}
+		} catch (SQLTimeoutException e) {
+			throw new RepositoryConnectionTimedOutException(
+					"Verse repository connection timed out.");
+		} catch (SQLException e) {
+			throw new RepositoryConnectionFailedException(
+					"Failed to establish connection to verse repository.");
+		}
+
 	}
+
 }

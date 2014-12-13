@@ -96,8 +96,6 @@ public class PostgresSongRepository extends PostgresRepository implements
 					ResultSet rs = pst.executeQuery();
 					try {
 
-						ArrayList<Song> songs = new ArrayList<Song>();
-
 						if (rs.next()) {
 							Song song = new Song();
 							song.setId(rs.getString("id"));
@@ -107,12 +105,11 @@ public class PostgresSongRepository extends PostgresRepository implements
 							song.setExtra(rs.getString("extra"));
 							song.setSongNumber(rs.getInt("song_number"));
 							song.setOtherNotes(rs.getString("other_notes"));
-							songs.add(song);
 							return song;
+						} else {
+							return null;
 						}
-
-						return null;
-
+						
 					} finally {
 						rs.close();
 					}

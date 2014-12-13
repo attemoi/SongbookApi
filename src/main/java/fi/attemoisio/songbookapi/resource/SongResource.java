@@ -21,6 +21,7 @@ import org.glassfish.jersey.process.internal.RequestScoped;
 
 import com.sun.jersey.api.ConflictException;
 import com.sun.jersey.api.NotFoundException;
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
@@ -33,7 +34,7 @@ import fi.attemoisio.songbookapi.validation.constraints.Slug;
 
 //@Path("/songs")
 @RequestScoped
-// @Api(value = "songs", description = "Operations about songs")
+@Api(value = "songs", description = "Operations about songs")
 @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
 public class SongResource {
 
@@ -119,7 +120,7 @@ public class SongResource {
 	}
 
 	@GET
-	@ApiOperation(value = "Get song info")
+	@ApiOperation(value = "Get song data")
 	@Path("/{song_id}")
 	public Response getSong(@Slug @PathParam("song_id") String songId) {
 

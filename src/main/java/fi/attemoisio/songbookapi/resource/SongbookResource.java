@@ -137,7 +137,7 @@ public class SongbookResource {
 	}
 	
 	@GET
-	@ApiOperation(value = "Get songbook info")
+	@ApiOperation(value = "Get songbook data")
 	@Path("/{book_id}")
 	public Response getSongbook(@Slug @PathParam("book_id") String bookId) {
 		

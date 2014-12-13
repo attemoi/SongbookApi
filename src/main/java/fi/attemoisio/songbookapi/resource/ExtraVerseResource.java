@@ -21,6 +21,7 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.process.internal.RequestScoped;
 
 import com.sun.jersey.api.NotFoundException;
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
@@ -30,9 +31,8 @@ import fi.attemoisio.songbookapi.model.ExtraVerse;
 import fi.attemoisio.songbookapi.model.ExtraVerseId;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 
-
 @RequestScoped
-//@Api(value = "extraverses", description = "Operations about extra verses")
+@Api(value = "extraverses", description = "Operations about extra verses")
 @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
 public class ExtraVerseResource {
 

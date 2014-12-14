@@ -1,6 +1,5 @@
 package fi.attemoisio.songbookapi.postgres;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,11 +26,9 @@ public class PostgresSongRepository extends PostgresRepository implements
 	public Collection<Song> getSongs(String bookId) {
 
 		String sql = "SELECT id, name, extra, lyrics, song_number, other_notes, page_num, book_id"
-				+ " FROM songs"
-				+ " WHERE book_id = ?";
-		try {
-			Connection conn = driver.getConnection();
-			try {
+				+ " FROM songs" + " WHERE book_id = ?";
+		
+		return handleConnection(conn -> {
 				PreparedStatement pst = conn.prepareStatement(sql);
 				pst.setString(1, bookId);
 				try {
@@ -57,83 +54,57 @@ public class PostgresSongRepository extends PostgresRepository implements
 					} finally {
 						rs.close();
 					}
-				} catch (SQLTimeoutException e) {
-					throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
-			} catch (SQLException e) {
-				throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_FAIL, e);
-			} finally {
-				conn.close();
-			}
-		} catch (SQLTimeoutException e) {
-			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_TIMEOUT, e);
-		} catch (SQLException e) {
-			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_FAIL, e);
-		}
+		});
 
 	}
 
 	@Override
 	public Song getSong(String bookId, String songId) {
+		
 		String sql = "SELECT id, name, extra, lyrics, song_number, other_notes, page_num, book_id"
-				+ " FROM songs"
-				+ " WHERE id = ? AND book_id = ?";
-		try {
-			Connection conn = driver.getConnection();
+				+ " FROM songs" + " WHERE id = ? AND book_id = ?";
+		
+		return handleConnection(conn -> {
+			PreparedStatement pst = conn.prepareStatement(sql);
+			pst.setString(1, songId);
+			pst.setString(2, bookId);
 			try {
-				PreparedStatement pst = conn.prepareStatement(sql);
-				pst.setString(1, songId);
-				pst.setString(2, bookId);
+				ResultSet rs = pst.executeQuery();
 				try {
-					ResultSet rs = pst.executeQuery();
-					try {
 
-						if (rs.next()) {
-							Song song = new Song();
-							song.setId(rs.getString("id"));
-							song.setName(rs.getString("name"));
-							song.setLyrics(rs.getString("lyrics"));
-							song.setPageNum(rs.getInt("page_num"));
-							song.setExtra(rs.getString("extra"));
-							song.setSongNumber(rs.getInt("song_number"));
-							song.setOtherNotes(rs.getString("other_notes"));
-							return song;
-						} else {
-							return null;
-						}
-						
-					} finally {
-						rs.close();
+					if (rs.next()) {
+						Song song = new Song();
+						song.setId(rs.getString("id"));
+						song.setName(rs.getString("name"));
+						song.setLyrics(rs.getString("lyrics"));
+						song.setPageNum(rs.getInt("page_num"));
+						song.setExtra(rs.getString("extra"));
+						song.setSongNumber(rs.getInt("song_number"));
+						song.setOtherNotes(rs.getString("other_notes"));
+						return song;
+					} else {
+						return null;
 					}
-				} catch (SQLTimeoutException e) {
-					throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT, e);
+
 				} finally {
-					pst.close();
+					rs.close();
 				}
-			} catch (SQLException e) {
-				throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
-				conn.close();
+				pst.close();
 			}
-		} catch (SQLTimeoutException e) {
-			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_TIMEOUT, e);
-		} catch (SQLException e) {
-			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_FAIL, e);
-		}
+		});
 	}
 
 	@Override
 	public boolean addSong(String bookId, Song book) {
-
-		final String sql = 
-				"INSERT INTO songs (id, name, extra, lyrics, song_number, other_notes, page_num, book_id) " + 
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		final String sql = "INSERT INTO songs (id, name, extra, lyrics, song_number, other_notes, page_num, book_id) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try {
-			Connection conn = driver.getConnection();
-			try {
+			return handleConnection(conn -> {
 				PreparedStatement pst = conn.prepareStatement(sql);
 				try {
 					pst.setString(1, book.getId());
@@ -148,23 +119,18 @@ public class PostgresSongRepository extends PostgresRepository implements
 					pst.execute();
 					return true;
 
-				} catch (SQLTimeoutException e) {
-					throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
-			} catch (SQLException e) {
-				if (e.getSQLState().equals("23505")) // POSTGRESQL error code for unique_violation
-					return false;
-				else
-					throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_FAIL, e);
-			} finally {
-				conn.close();
+			});
+		} catch (RepositoryException e) {
+			if (e.getCause() instanceof SQLException
+					&& ((SQLException) e.getCause()).getSQLState().equals(
+							ERROR_CODE_UNIQUE_VIOLATION)) {
+				return false;
+			} else {
+				throw e;
 			}
-		} catch (SQLTimeoutException e) {
-			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_TIMEOUT, e);
-		} catch (SQLException e) {
-			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_FAIL, e);
 		}
 
 	}
@@ -174,30 +140,40 @@ public class PostgresSongRepository extends PostgresRepository implements
 
 		final String sql = "DELETE FROM songs WHERE id = ? AND book_id = ?";
 
-		try {
-			Connection conn = driver.getConnection();
+		return handleConnection(conn -> {
+			PreparedStatement pst = conn.prepareStatement(sql);
 			try {
-				PreparedStatement pst = conn.prepareStatement(sql);
-				try {
-					pst.setString(1, songId);
-					pst.setString(2, bookId);
-					int affectedRows = pst.executeUpdate();
-					return affectedRows > 0;
-				} catch (SQLTimeoutException e) {
-					throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT, e);
-				} finally {
-					pst.close();
-				}
-			} catch (SQLException e) {
-				throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_FAIL, e);
+				pst.setString(1, songId);
+				pst.setString(2, bookId);
+				int affectedRows = pst.executeUpdate();
+				return affectedRows > 0;
+			} catch (SQLTimeoutException e) {
+				throw new RepositoryException(
+						ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT, e);
 			} finally {
-				conn.close();
+				pst.close();
 			}
-		} catch (SQLTimeoutException e) {
-			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_TIMEOUT, e);
-		} catch (SQLException e) {
-			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_FAIL, e);
-		}
+		});
 
+	}
+
+	@Override
+	public ApiError getRepositoryConnectionFailApiError() {
+		return ApiError.SONG_REPOSITORY_CONNECTION_FAIL;
+	}
+
+	@Override
+	public ApiError getRepositoryConnectionTimeoutApiError() {
+		return ApiError.SONG_REPOSITORY_CONNECTION_TIMEOUT;
+	}
+
+	@Override
+	public ApiError getRepositoryRequestFailApiError() {
+		return ApiError.SONG_REPOSITORY_REQUEST_FAIL;
+	}
+
+	@Override
+	public ApiError getRepositoryRequestTimeoutApiError() {
+		return ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT;
 	}
 }

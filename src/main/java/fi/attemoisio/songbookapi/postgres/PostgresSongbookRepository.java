@@ -24,104 +24,103 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 		super(driver);
 	}
 
-	@Override
-	public Collection<Songbook> getSongbooks() {
-
+	public <T> T handleConnection(ConnectionHandler<T> handler) {
 		try {
 			Connection conn = driver.getConnection();
 			try {
-				Statement pst = conn.createStatement();
-				try {
-					ResultSet rs = pst
-							.executeQuery("SELECT id, title, releaseYear, description, other_notes from songbooks");
-					try {
 
-						ArrayList<Songbook> books = new ArrayList<Songbook>();
+				return handler.handleConnection(conn);
 
-						while (rs.next()) {
-							Songbook book = new Songbook();
-							book.setId(rs.getString("id"));
-							book.setTitle(rs.getString("title"));
-							book.setReleaseYear(rs.getInt("releaseYear"));
-							book.setDescription(rs.getString("description"));
-							book.setOtherNotes(rs.getString("other_notes"));
-							books.add(book);
-						}
-
-						return books;
-
-					} finally {
-						rs.close();
-					}
-				} catch (SQLTimeoutException e) {
-					throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_REQUEST_TIMEOUT,e);
-				} finally {
-					pst.close();
-				}
+			} catch (SQLTimeoutException e) {
+				throw new RepositoryException(
+						ApiError.SONGBOOK_REPOSITORY_REQUEST_TIMEOUT, e);
 			} catch (SQLException e) {
-				throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_REQUEST_FAIL, e);
+				throw new RepositoryException(
+						ApiError.SONGBOOK_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
 				conn.close();
 			}
 		} catch (SQLTimeoutException e) {
-			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_TIMEOUT, e);
+			throw new RepositoryException(
+					ApiError.SONGBOOK_REPOSITORY_CONNECTION_TIMEOUT, e);
 		} catch (SQLException e) {
-			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_FAIL, e);
+			throw new RepositoryException(
+					ApiError.SONGBOOK_REPOSITORY_CONNECTION_FAIL, e);
 		}
+	}
+
+	@Override
+	public Collection<Songbook> getSongbooks() {
+		return handleConnection(conn -> {
+			Statement pst = conn.createStatement();
+			try {
+				ResultSet rs = pst
+						.executeQuery("SELECT id, title, releaseYear, description, other_notes from songbooks");
+				try {
+
+					ArrayList<Songbook> books = new ArrayList<Songbook>();
+
+					while (rs.next()) {
+						Songbook book = new Songbook();
+						book.setId(rs.getString("id"));
+						book.setTitle(rs.getString("title"));
+						book.setReleaseYear(rs.getInt("releaseYear"));
+						book.setDescription(rs.getString("description"));
+						book.setOtherNotes(rs.getString("other_notes"));
+						books.add(book);
+					}
+
+					return books;
+
+				} finally {
+					rs.close();
+				}
+			} finally {
+				pst.close();
+			}
+		});
 
 	}
 
 	@Override
 	public Songbook getSongbook(String id) {
-		String sql = "SELECT id, title, releaseYear, description, other_notes from songbooks WHERE id = ?";
-		try {
-			Connection conn = driver.getConnection();
+
+		return handleConnection(conn -> {
+			String sql = "SELECT id, title, releaseYear, description, other_notes from songbooks WHERE id = ?";
+			PreparedStatement pst = conn.prepareStatement(sql);
 			try {
-				PreparedStatement pst = conn.prepareStatement(sql);
+				pst.setMaxRows(1);
+				pst.setString(1, id);
+				ResultSet rs = pst.executeQuery();
 				try {
-					pst.setMaxRows(1);
-					pst.setString(1, id);
-					ResultSet rs = pst.executeQuery();
-					try {
-						if (rs.next()) {
-							Songbook book = new Songbook();
-							book.setId(rs.getString("id"));
-							book.setTitle(rs.getString("title"));
-							book.setReleaseYear(rs.getInt("releaseYear"));
-							book.setDescription(rs.getString("description"));
-							book.setOtherNotes(rs.getString("other_notes"));
-							return book;
-						} else {
-							return null;
-						}
-					} finally {
-						rs.close();
+					if (rs.next()) {
+						Songbook book = new Songbook();
+						book.setId(rs.getString("id"));
+						book.setTitle(rs.getString("title"));
+						book.setReleaseYear(rs.getInt("releaseYear"));
+						book.setDescription(rs.getString("description"));
+						book.setOtherNotes(rs.getString("other_notes"));
+						return book;
+					} else {
+						return null;
 					}
-				} catch (SQLTimeoutException e) {
-					throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
-					pst.close();
+					rs.close();
 				}
-			} catch (SQLException e) {
-				throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
-				conn.close();
+				pst.close();
 			}
-		} catch (SQLTimeoutException e) {
-			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_TIMEOUT, e);
-		} catch (SQLException e) {
-			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_FAIL, e);
-		}
+		});
 	}
 
 	@Override
 	public boolean addSongbook(Songbook book) {
 
-		final String sql = "INSERT INTO songbooks (id, title, releaseYear, description, other_notes) VALUES (?, ?, ?, ?, ?)";
-
 		try {
-			Connection conn = driver.getConnection();
-			try {
+			
+			return handleConnection(conn -> {
+				final String sql = "INSERT INTO songbooks (id, title, releaseYear, description, other_notes) VALUES (?, ?, ?, ?, ?)";
+
 				PreparedStatement pst = conn.prepareStatement(sql);
 				try {
 					pst.setString(1, book.getId());
@@ -133,55 +132,39 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 					pst.execute();
 					return true;
 
-				} catch (SQLTimeoutException e) {
-					throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
-			} catch (SQLException e) {
-				if (e.getSQLState().equals("23505")) // POSTGRESQL error code for unique_violation
-					return false;
-				else
-					throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_REQUEST_FAIL, e);
-			} finally {
-				conn.close();
+			});
+			
+		} catch (RepositoryException e) {
+			if (e.getCause() instanceof SQLException
+					&& ((SQLException) e.getCause()).getSQLState().equals(ERROR_CODE_UNIQUE_VIOLATION)) {
+				return false;
+			} else {
+				throw e;
 			}
-		} catch (SQLTimeoutException e) {
-			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_TIMEOUT, e);
-		} catch (SQLException e) {
-			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_FAIL, e);
 		}
-
+		
 	}
 
 	@Override
 	public boolean deleteSongbook(String id) {
 
-		final String sql = "DELETE FROM songbooks WHERE songbooks.id = ?";
-
-		try {
-			Connection conn = driver.getConnection();
+		return handleConnection(conn -> {
+			final String sql = "DELETE FROM songbooks WHERE songbooks.id = ?";
+			PreparedStatement pst = conn.prepareStatement(sql);
 			try {
-				PreparedStatement pst = conn.prepareStatement(sql);
-				try {
-					pst.setString(1, id);
-					int affectedRows = pst.executeUpdate();
-					return affectedRows > 0;
-				} catch (SQLTimeoutException e) {
-					throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_REQUEST_TIMEOUT, e);
-				} finally {
-					pst.close();
-				}
-			} catch (SQLException e) {
-				throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_REQUEST_FAIL, e);
+				pst.setString(1, id);
+				int affectedRows = pst.executeUpdate();
+				return affectedRows > 0;
+			} catch (SQLTimeoutException e) {
+				throw new RepositoryException(
+						ApiError.SONGBOOK_REPOSITORY_REQUEST_TIMEOUT, e);
 			} finally {
-				conn.close();
+				pst.close();
 			}
-		} catch (SQLTimeoutException e) {
-			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_TIMEOUT, e);
-		} catch (SQLException e) {
-			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_FAIL, e);
-		}
+		});
 
 	}
 }

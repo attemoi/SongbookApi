@@ -1,4 +1,4 @@
-package fi.attemoisio.songbookapi.exceptionhandling;
+package fi.attemoisio.songbookapi.errorhandling;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,15 +7,15 @@ import java.util.List;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path.Node;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import fi.attemoisio.songbookapi.model.error.ValidationError;
+import fi.attemoisio.songbookapi.model.error.ValidationErrorResponse;
+
 /**
- * The default constraintViolation is a bit too verbose, so this is used to
- * display only the necessary request validation information.
  * 
  * @author Atte
  *
@@ -26,13 +26,17 @@ public class ConstraintViolationExceptionMapper implements
 
 	@Override
 	public Response toResponse(final ConstraintViolationException exception) {
-		List<CustomConstraintViolation> errors = new ArrayList<CustomConstraintViolation>();
-
+		
+		ValidationErrorResponse em = new ValidationErrorResponse();
+		em.setCode(ApiError.VALIDATION.getCode());
+		em.setMessage(ApiError.VALIDATION.getDescription());
+		
+		List<ValidationError> errors = new ArrayList<ValidationError>();
 		for (@SuppressWarnings("rawtypes")
 		ConstraintViolation violation : exception.getConstraintViolations()) {
 
-			CustomConstraintViolation e = new CustomConstraintViolation();
-			e.setInvalidValue(violation.getInvalidValue().toString());
+			ValidationError e = new ValidationError();
+
 			String property = "";
 			Iterator<Node> iter = violation.getPropertyPath().iterator();
 			while (iter.hasNext()) {
@@ -42,12 +46,9 @@ public class ConstraintViolationExceptionMapper implements
 			e.setMessage(violation.getMessage());
 			errors.add(e);
 		}
+		em.setErrors(errors);
 
-		GenericEntity<List<CustomConstraintViolation>> entity = new GenericEntity<List<CustomConstraintViolation>>(
-				errors) {
-		};
-
-		return Response.status(Response.Status.BAD_REQUEST).entity(entity)
+		return Response.status(Response.Status.BAD_REQUEST).entity(em)
 				.type(MediaType.APPLICATION_JSON).build();
 	}
 }

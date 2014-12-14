@@ -27,15 +27,16 @@ import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
-import fi.attemoisio.songbookapi.exceptionhandling.ConstraintViolationExceptionMapper;
-import fi.attemoisio.songbookapi.exceptionhandling.RestExceptionMapper;
+import fi.attemoisio.songbookapi.errorhandling.ConstraintViolationExceptionMapper;
+import fi.attemoisio.songbookapi.errorhandling.RepositoryExceptionMapper;
 
 public class SongbookApplication extends ResourceConfig {
 	public SongbookApplication() {
 
 		register(new SongbookApplicationBinder());
 		register(new ConstraintViolationExceptionMapper());
-		register(new RestExceptionMapper());
+		//register(new RestExceptionMapper());
+		register(new RepositoryExceptionMapper());
 
 		packages("fi.attemoisio.songbookapi",
 				"com.wordnik.swagger.jersey.listing");

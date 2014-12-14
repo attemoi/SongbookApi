@@ -10,12 +10,10 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
+import fi.attemoisio.songbookapi.errorhandling.ApiError;
+import fi.attemoisio.songbookapi.exceptions.RepositoryException;
 import fi.attemoisio.songbookapi.model.Song;
 import fi.attemoisio.songbookapi.repository.SongRepository;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionTimedOutException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestTimedOutException;
 
 public class PostgresSongRepository extends PostgresRepository implements
 		SongRepository {
@@ -60,23 +58,19 @@ public class PostgresSongRepository extends PostgresRepository implements
 						rs.close();
 					}
 				} catch (SQLTimeoutException e) {
-					throw new RepositoryRequestTimedOutException(
-							"Song list request timed out");
+					throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
 			} catch (SQLException e) {
-				throw new RepositoryRequestFailedException(
-						"Failed to request song list");
+				throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
 				conn.close();
 			}
 		} catch (SQLTimeoutException e) {
-			throw new RepositoryConnectionTimedOutException(
-					"Song repository connection timed out");
+			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_TIMEOUT, e);
 		} catch (SQLException e) {
-			throw new RepositoryConnectionFailedException(
-					"Song repository connection failed");
+			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_FAIL, e);
 		}
 
 	}
@@ -114,23 +108,19 @@ public class PostgresSongRepository extends PostgresRepository implements
 						rs.close();
 					}
 				} catch (SQLTimeoutException e) {
-					throw new RepositoryRequestTimedOutException(
-							"Song request timed out");
+					throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
 			} catch (SQLException e) {
-				throw new RepositoryRequestFailedException(
-						"Failed to request song");
+				throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
 				conn.close();
 			}
 		} catch (SQLTimeoutException e) {
-			throw new RepositoryConnectionTimedOutException(
-					"Song repository connection timed out");
+			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_TIMEOUT, e);
 		} catch (SQLException e) {
-			throw new RepositoryConnectionFailedException(
-					"Song repository connection failed");
+			throw new RepositoryException(ApiError.SONGBOOK_REPOSITORY_CONNECTION_FAIL, e);
 		}
 	}
 
@@ -159,27 +149,22 @@ public class PostgresSongRepository extends PostgresRepository implements
 					return true;
 
 				} catch (SQLTimeoutException e) {
-					throw new RepositoryRequestTimedOutException(
-							"Songbook add request timed out.");
+					throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
 			} catch (SQLException e) {
-				if (e.getSQLState().equals("23505")) // POSTGRESQL error code
-														// for unique_violation
+				if (e.getSQLState().equals("23505")) // POSTGRESQL error code for unique_violation
 					return false;
 				else
-					throw new RepositoryRequestFailedException(
-							"Failed to add songbook.");
+					throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
 				conn.close();
 			}
 		} catch (SQLTimeoutException e) {
-			throw new RepositoryConnectionTimedOutException(
-					"Songbook repository connection timed out.");
+			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_TIMEOUT, e);
 		} catch (SQLException e) {
-			throw new RepositoryConnectionFailedException(
-					"Failed to establish connection to songbook repository.");
+			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_FAIL, e);
 		}
 
 	}
@@ -199,23 +184,19 @@ public class PostgresSongRepository extends PostgresRepository implements
 					int affectedRows = pst.executeUpdate();
 					return affectedRows > 0;
 				} catch (SQLTimeoutException e) {
-					throw new RepositoryRequestTimedOutException(
-							"Song delete request timed out.");
+					throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
 			} catch (SQLException e) {
-				throw new RepositoryRequestFailedException(
-						"Failed to delete song.");
+				throw new RepositoryException(ApiError.SONG_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
 				conn.close();
 			}
 		} catch (SQLTimeoutException e) {
-			throw new RepositoryConnectionTimedOutException(
-					"Song repository connection timed out.");
+			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_TIMEOUT, e);
 		} catch (SQLException e) {
-			throw new RepositoryConnectionFailedException(
-					"Failed to establish connection to song repository.");
+			throw new RepositoryException(ApiError.SONG_REPOSITORY_CONNECTION_FAIL, e);
 		}
 
 	}

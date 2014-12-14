@@ -1,4 +1,4 @@
-package fi.attemoisio.songbookapi.validation.constraints;
+package fi.attemoisio.songbookapi.validation;
 
 /*
  * ###################################################################=
@@ -21,12 +21,6 @@ package fi.attemoisio.songbookapi.validation.constraints;
  * ###################################################################-
  */
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -35,13 +29,19 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.NotBlank;
+
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
+
 @Documented
 @Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE })
 @Retention(RUNTIME)
-@Constraint(validatedBy = SlugValidator.class)
-@Size(min = 1, max = 50)
-public @interface Slug {
-	String message() default "Only alphanumerics and hyphens(\"-\") allowed.";
+@Constraint(validatedBy = { })
+@NotBlank
+@Size(min = 1, max = 255)
+public @interface Title {
+	String message() default "{fi.attemoisio.songbookapi.validation.constraints.Title.message}";
 
     Class<?>[] groups() default {};
 

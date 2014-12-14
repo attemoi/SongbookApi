@@ -1,4 +1,4 @@
-package fi.attemoisio.songbookapi.exceptionhandling;
+package fi.attemoisio.songbookapi.errorhandling;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,9 +16,8 @@ public class RestExceptionMapper implements ExceptionMapper<Throwable>
     @Override
     public Response toResponse(Throwable exception)
     {
-    	// TODO: logging
-        exception.printStackTrace();
-
+    	// TODO: log exception
+    	
         return Response.status(getStatusCode(exception))
                 .entity(getEntity(exception)).type(MediaType.TEXT_PLAIN)
                 .build();

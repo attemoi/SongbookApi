@@ -52,7 +52,7 @@ import fi.attemoisio.songbookapi.model.Songbook;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
 import fi.attemoisio.songbookapi.repository.SongbookRepository;
-import fi.attemoisio.songbookapi.validation.constraints.Slug;
+import fi.attemoisio.songbookapi.validation.Slug;
 
 
 @Path("songbooks")

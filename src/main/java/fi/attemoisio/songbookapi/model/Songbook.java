@@ -29,9 +29,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.wordnik.swagger.annotations.ApiModel;
 
-import fi.attemoisio.songbookapi.validation.constraints.Slug;
-import fi.attemoisio.songbookapi.validation.constraints.Text;
-import fi.attemoisio.songbookapi.validation.constraints.Title;
+import fi.attemoisio.songbookapi.validation.Slug;
+import fi.attemoisio.songbookapi.validation.Text;
+import fi.attemoisio.songbookapi.validation.Title;
 
 @XmlRootElement(name = "Songbook")
 @ApiModel(description = "Songbook model")

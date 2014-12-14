@@ -1,22 +1,11 @@
-package fi.attemoisio.songbookapi.exceptionhandling;
+package fi.attemoisio.songbookapi.model.error;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "EntityViolationError")
-public class CustomConstraintViolation {
+public class ValidationError {
 	
-	private String invalidValue;
 	private String property;
 	private String message;
-	
-	@XmlElement(name = "invalidValue")
-	public String getInvalidValue() {
-		return invalidValue;
-	}
-	public void setInvalidValue(String invalidValue) {
-		this.invalidValue = invalidValue;
-	}
 	
 	@XmlElement(name = "property")
 	public String getProperty() {

@@ -10,13 +10,11 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
-import fi.attemoisio.songbookapi.model.ExtraVersePost;
+import fi.attemoisio.songbookapi.errorhandling.ApiError;
+import fi.attemoisio.songbookapi.exceptions.RepositoryException;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
+import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionTimedOutException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestTimedOutException;
 
 public class PostgresExtraVerseRepository extends PostgresRepository implements
 		ExtraVerseRepository {
@@ -57,23 +55,19 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 						rs.close();
 					}
 				} catch (SQLTimeoutException e) {
-					throw new RepositoryRequestTimedOutException(
-							"Verse list request timed out");
+					throw new RepositoryException(ApiError.VERSE_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
 			} catch (SQLException e) {
-				throw new RepositoryRequestFailedException(
-						"Failed to request list of verses");
+				throw new RepositoryException(ApiError.VERSE_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
 				conn.close();
 			}
 		} catch (SQLTimeoutException e) {
-			throw new RepositoryConnectionTimedOutException(
-					"Verse repository connection timed out");
+			throw new RepositoryException(ApiError.VERSE_REPOSITORY_CONNECTION_TIMEOUT, e);
 		} catch (SQLException e) {
-			throw new RepositoryConnectionFailedException(
-					"Verse repository connection failed");
+			throw new RepositoryException(ApiError.VERSE_REPOSITORY_CONNECTION_FAIL, e);
 		}
 
 	}
@@ -105,23 +99,19 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 						rs.close();
 					}
 				} catch (SQLTimeoutException e) {
-					throw new RepositoryRequestTimedOutException(
-							"Verse request timed out");
+					throw new RepositoryException(ApiError.VERSE_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
 			} catch (SQLException e) {
-				throw new RepositoryRequestFailedException(
-						"Failed to request verse data");
+				throw new RepositoryException(ApiError.VERSE_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
 				conn.close();
 			}
 		} catch (SQLTimeoutException e) {
-			throw new RepositoryConnectionTimedOutException(
-					"Verse repository connection timed out");
+			throw new RepositoryException(ApiError.VERSE_REPOSITORY_CONNECTION_TIMEOUT, e);
 		} catch (SQLException e) {
-			throw new RepositoryConnectionFailedException(
-					"Verse repository connection failed");
+			throw new RepositoryException(ApiError.VERSE_REPOSITORY_CONNECTION_FAIL, e);
 		}
 	}
 
@@ -153,23 +143,19 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 					}
 
 				} catch (SQLTimeoutException e) {
-					throw new RepositoryRequestTimedOutException(
-							"Verse add request timed out.");
+					throw new RepositoryException(ApiError.VERSE_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
 			} catch (SQLException e) {
-				throw new RepositoryRequestFailedException(
-						"Failed to add verse.");
+				throw new RepositoryException(ApiError.VERSE_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
 				conn.close();
 			}
 		} catch (SQLTimeoutException e) {
-			throw new RepositoryConnectionTimedOutException(
-					"Verse repository connection timed out.");
+			throw new RepositoryException(ApiError.VERSE_REPOSITORY_CONNECTION_TIMEOUT, e);
 		} catch (SQLException e) {
-			throw new RepositoryConnectionFailedException(
-					"Failed to establish connection to verse repository.");
+			throw new RepositoryException(ApiError.VERSE_REPOSITORY_CONNECTION_FAIL, e);
 		}
 
 	}
@@ -191,23 +177,19 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 					int affectedRows = pst.executeUpdate();
 					return affectedRows > 0;
 				} catch (SQLTimeoutException e) {
-					throw new RepositoryRequestTimedOutException(
-							"Verse delete request timed out.");
+					throw new RepositoryException(ApiError.VERSE_REPOSITORY_REQUEST_TIMEOUT, e);
 				} finally {
 					pst.close();
 				}
 			} catch (SQLException e) {
-				throw new RepositoryRequestFailedException(
-						"Failed to delete verse.");
+				throw new RepositoryException(ApiError.VERSE_REPOSITORY_REQUEST_FAIL, e);
 			} finally {
 				conn.close();
 			}
 		} catch (SQLTimeoutException e) {
-			throw new RepositoryConnectionTimedOutException(
-					"Verse repository connection timed out.");
+			throw new RepositoryException(ApiError.VERSE_REPOSITORY_CONNECTION_TIMEOUT, e);
 		} catch (SQLException e) {
-			throw new RepositoryConnectionFailedException(
-					"Failed to establish connection to verse repository.");
+			throw new RepositoryException(ApiError.VERSE_REPOSITORY_CONNECTION_FAIL, e);
 		}
 
 	}

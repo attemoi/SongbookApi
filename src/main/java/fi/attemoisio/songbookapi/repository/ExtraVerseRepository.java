@@ -2,12 +2,8 @@ package fi.attemoisio.songbookapi.repository;
 
 import java.util.Collection;
 
-import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionTimedOutException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestTimedOutException;
+import fi.attemoisio.songbookapi.model.ExtraVersePost;
 
 public interface ExtraVerseRepository {
 
@@ -15,10 +11,6 @@ public interface ExtraVerseRepository {
 	 * Fetches all extra verses for a song.
 	 * 
 	 * @return collection containing all extra verses for a song.
-	 * @throws RepositoryConnectionFailedException
-	 * @throws RepositoryRequestFailedException
-	 * @throws RepositoryRequestTimedOutException
-	 * @throws RepositoryConnectionTimedOutException
 	 */
 	public Collection<ExtraVerse> getExtraVerses(String bookId, String songId);
 
@@ -29,10 +21,6 @@ public interface ExtraVerseRepository {
 	 * @param songId
 	 * @param extraVerseid
 	 * @return Extra verse with the given id, null if verse was not found.
-	 * @throws RepositoryConnectionFailedException
-	 * @throws RepositoryRequestFailedException
-	 * @throws RepositoryRequestTimedOutException
-	 * @throws RepositoryConnectionTimedOutException
 	 */
 	public ExtraVerse getExtraVerse(String bookId, String songId,
 			Integer extraVerseId);
@@ -45,10 +33,6 @@ public interface ExtraVerseRepository {
 	 * @param verse
 	 * @return True, if the verse was successfully added. False, if a verse with
 	 *         the given id already exists.
-	 * @throws RepositoryConnectionFailedException
-	 * @throws RepositoryRequestFailedException
-	 * @throws RepositoryRequestTimedOutException
-	 * @throws RepositoryConnectionTimedOutException
 	 */
 	public ExtraVerse addExtraVerse(String bookId, String songId, ExtraVersePost verse);
 
@@ -61,10 +45,6 @@ public interface ExtraVerseRepository {
 	 * 
 	 * @return True, if the verse was successfully deleted. False, if the verse
 	 *         with the given id was not found.
-	 * @throws RepositoryConnectionFailedException
-	 * @throws RepositoryRequestFailedException
-	 * @throws RepositoryRequestTimedOutException
-	 * @throws RepositoryConnectionTimedOutException
 	 */
 	public boolean deleteExtraVerse(String bookId, String songId, Integer verseId);
 

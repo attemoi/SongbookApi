@@ -1,4 +1,4 @@
-package fi.attemoisio.songbookapi.validation.constraints;
+package fi.attemoisio.songbookapi.validation;
 
 /*
  * ###################################################################=

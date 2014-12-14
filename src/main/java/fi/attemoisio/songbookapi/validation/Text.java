@@ -1,4 +1,4 @@
-package fi.attemoisio.songbookapi.validation.constraints;
+package fi.attemoisio.songbookapi.validation;
 
 /*
  * ###################################################################=
@@ -29,8 +29,6 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 
@@ -38,10 +36,9 @@ import static java.lang.annotation.RetentionPolicy.*;
 @Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE })
 @Retention(RUNTIME)
 @Constraint(validatedBy = { })
-@NotBlank
-@Size(min = 1, max = 255)
-public @interface Title {
-	String message() default "{fi.attemoisio.songbookapi.validation.constraints.Title.message}";
+@Size(min = 1, max = 10000)
+public @interface Text {
+	String message() default "{fi.attemoisio.songbookapi.validation.constraints.Text.message}";
 
     Class<?>[] groups() default {};
 

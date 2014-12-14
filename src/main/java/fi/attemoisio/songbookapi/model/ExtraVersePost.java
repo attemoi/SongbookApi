@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.wordnik.swagger.annotations.ApiModel;
 
-import fi.attemoisio.songbookapi.validation.constraints.Text;
+import fi.attemoisio.songbookapi.validation.Text;
 
 @XmlRootElement(name = "ExtraVerse")
 @ApiModel(description = "Extra verse model")

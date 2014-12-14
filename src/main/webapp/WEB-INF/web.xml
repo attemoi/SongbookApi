@@ -44,7 +44,7 @@
 
 	<filter-mapping>
 		<filter-name>ApiOriginFilter</filter-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>/api/*</url-pattern>
 	</filter-mapping>
 
 </web-app>

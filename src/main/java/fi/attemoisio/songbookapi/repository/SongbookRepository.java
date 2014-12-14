@@ -3,10 +3,6 @@ package fi.attemoisio.songbookapi.repository;
 import java.util.Collection;
 
 import fi.attemoisio.songbookapi.model.Songbook;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryConnectionTimedOutException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestFailedException;
-import fi.attemoisio.songbookapi.repository.exceptions.RepositoryRequestTimedOutException;
 
 public interface SongbookRepository {
 
@@ -14,10 +10,6 @@ public interface SongbookRepository {
 	 * Fetches all songbooks from the repository.
 	 * 
 	 * @return collection containing all songbooks.
-	 * @throws RepositoryConnectionFailedException
-	 * @throws RepositoryRequestFailedException
-	 * @throws RepositoryRequestTimedOutException
-	 * @throws RepositoryConnectionTimedOutException
 	 */
 	public Collection<Songbook> getSongbooks();
 
@@ -26,10 +18,6 @@ public interface SongbookRepository {
 	 * 
 	 * @param id
 	 * @return Songbook with the given id, null if book was not found.
-	 * @throws RepositoryConnectionFailedException
-	 * @throws RepositoryRequestFailedException
-	 * @throws RepositoryRequestTimedOutException
-	 * @throws RepositoryConnectionTimedOutException
 	 */
 	public Songbook getSongbook(String id);
 
@@ -39,10 +27,6 @@ public interface SongbookRepository {
 	 * @param book
 	 * @return True, if the book was successfully added. False, if the book with
 	 *         the given id already exists.
-	 * @throws RepositoryConnectionFailedException
-	 * @throws RepositoryRequestFailedException
-	 * @throws RepositoryRequestTimedOutException
-	 * @throws RepositoryConnectionTimedOutException
 	 */
 	public boolean addSongbook(Songbook book);
 
@@ -52,10 +36,6 @@ public interface SongbookRepository {
 	 * @param id
 	 * @return True, if the book was successfully deleted. False, if the book
 	 *         with the given id was not found.
-	 * @throws RepositoryConnectionFailedException
-	 * @throws RepositoryRequestFailedException
-	 * @throws RepositoryRequestTimedOutException
-	 * @throws RepositoryConnectionTimedOutException
 	 */
 	public boolean deleteSongbook(String id);
 

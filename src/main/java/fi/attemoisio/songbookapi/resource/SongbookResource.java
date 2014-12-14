@@ -36,18 +36,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NoContentException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.api.ConflictException;
-import com.sun.jersey.api.NotFoundException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
+import fi.attemoisio.songbookapi.errorhandling.ApiError;
+import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.Songbook;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
@@ -78,14 +77,14 @@ public class SongbookResource {
 			@ApiResponse(code = 408, message = "Request timeout"),
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
-	public Response getSongbooks() throws NoContentException  {
+	public Response getSongbooks()  {
 
 		Collection<Songbook> books;
 
 		books = songbookRepository.getSongbooks();
 
 		if (books.isEmpty())
-			throw new NoContentException("No songbooks found");
+			throw new ApiException(ApiError.GET_SONGBOOKS_NO_CONTENT);
 
 		GenericEntity<Collection<Songbook>> entity = new GenericEntity<Collection<Songbook>>(
 				books) {
@@ -109,7 +108,7 @@ public class SongbookResource {
 			return Response.created(getCreatedUri(book.getId())).entity(book)
 					.build();
 		} else {
-			throw new ConflictException("Songbook with given id already exists");
+			throw new ApiException(ApiError.ADD_SONGBOOK_CONFLICT);
 		}
 
 	}
@@ -124,14 +123,13 @@ public class SongbookResource {
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	public Response deleteSongbook(
-			@ApiParam(value = "Id of songbook to delete", required = true) @Slug @PathParam("book_id") String bookId) {
+			@ApiParam(value = "Id of songbook to delete", required = true) @PathParam("book_id") String bookId) {
 
 		if (songbookRepository.deleteSongbook(bookId)) {
 			return Response.ok("Songbook deleted succesfully")
 					.type(MediaType.TEXT_PLAIN).build();
 		} else {
-			throw new NotFoundException(
-					"Could not delete songbook (id not found).");
+			throw new ApiException(ApiError.DELETE_SONGBOOK_NOT_FOUND);
 		}
 
 	}
@@ -144,7 +142,7 @@ public class SongbookResource {
 		Songbook book = songbookRepository.getSongbook(bookId);
 		
 		if (book == null)
-			throw new NotFoundException("Songbook not found.");
+			throw new ApiException(ApiError.GET_SONGBOOK_NOT_FOUND);
 		
 		return Response.ok(book).build();
 		
@@ -156,7 +154,7 @@ public class SongbookResource {
 		Songbook book = songbookRepository.getSongbook(bookId);
 		
 		if (book == null)
-			throw new NotFoundException("Songbook was not found.");
+			throw new ApiException(ApiError.GET_SONGBOOK_NOT_FOUND);
 		
 		return new SongResource(uriInfo, songRepository, verseRepository, book.getId());
 		

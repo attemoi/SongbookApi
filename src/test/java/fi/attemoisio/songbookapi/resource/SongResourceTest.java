@@ -72,7 +72,7 @@ public class SongResourceTest extends JerseyTest {
     }
     
     @Test
-    public void testAddSongbook() {
+    public void testAddSong() {
     	
     	Song song = new Song();
     	song.setId("song123");

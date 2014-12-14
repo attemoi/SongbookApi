@@ -13,20 +13,19 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NoContentException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.process.internal.RequestScoped;
 
-import com.sun.jersey.api.ConflictException;
-import com.sun.jersey.api.NotFoundException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
+import fi.attemoisio.songbookapi.errorhandling.ApiError;
+import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.Song;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
@@ -63,14 +62,14 @@ public class SongResource {
 			@ApiResponse(code = 408, message = "Request timeout"),
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
-	public Response getSongs() throws NoContentException {
+	public Response getSongs() {
 
 		Collection<Song> songs;
 
 		songs = songRepository.getSongs(bookId);
 
 		if (songs.isEmpty())
-			throw new NoContentException("No songs found");
+			throw new ApiException(ApiError.GET_SONGS_NO_CONTENT);
 
 		GenericEntity<Collection<Song>> entity = new GenericEntity<Collection<Song>>(
 				songs) {
@@ -93,7 +92,7 @@ public class SongResource {
 		if (songRepository.addSong(bookId, song)) {
 			return Response.created(getCreatedUri(bookId)).entity(song).build();
 		} else {
-			throw new ConflictException("Song with given id already exists");
+			throw new ApiException(ApiError.ADD_SONG_CONFLICT);
 		}
 
 	}
@@ -108,13 +107,13 @@ public class SongResource {
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	public Response deleteSong(
-			@ApiParam(value = "Id of song to delete", required = true) @Slug @PathParam("song_id") String songId) {
+			@ApiParam(value = "Id of song to delete", required = true) @PathParam("song_id") String songId) {
 
 		if (songRepository.deleteSong(bookId, songId)) {
 			return Response.ok("Song deleted succesfully")
 					.type(MediaType.TEXT_PLAIN).build();
 		} else {
-			throw new NotFoundException("Could not delete song (id not found).");
+			throw new ApiException(ApiError.DELETE_SONG_NOT_FOUND);
 		}
 
 	}
@@ -127,7 +126,7 @@ public class SongResource {
 		Song song = songRepository.getSong(bookId, songId);
 
 		if (song == null)
-			throw new NotFoundException("Song was not found.");
+			throw new ApiException(ApiError.GET_SONG_NOT_FOUND);
 
 		return Response.ok(song).build();
 
@@ -140,7 +139,7 @@ public class SongResource {
 		Song song = songRepository.getSong(bookId, songId);
 
 		if (song == null)
-			throw new NotFoundException("Song was not found.");
+			throw new ApiException(ApiError.GET_SONG_NOT_FOUND);
 
 		return new ExtraVerseResource(uriInfo, verseRepository, bookId,
 				song.getId());

@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.Collection;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -20,15 +19,16 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.process.internal.RequestScoped;
 
-import com.sun.jersey.api.NotFoundException;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
 
-import fi.attemoisio.songbookapi.model.ExtraVersePost;
+import fi.attemoisio.songbookapi.errorhandling.ApiError;
+import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
+import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 
 @RequestScoped
@@ -40,14 +40,15 @@ public class ExtraVerseResource {
 	ExtraVerseRepository verseRepository;
 	String bookId;
 	String songId;
-	
-	public ExtraVerseResource(UriInfo uriInfo, ExtraVerseRepository verseRepository, String bookId, String songId) {
+
+	public ExtraVerseResource(UriInfo uriInfo,
+			ExtraVerseRepository verseRepository, String bookId, String songId) {
 		this.uriInfo = uriInfo;
 		this.verseRepository = verseRepository;
 		this.bookId = bookId;
 		this.songId = songId;
 	}
-	
+
 	private URI getCreatedUri(String resourceId) {
 		return uriInfo.getRequestUri().resolve("songbooks").resolve(resourceId);
 	}
@@ -67,7 +68,7 @@ public class ExtraVerseResource {
 		extraVerses = verseRepository.getExtraVerses(bookId, songId);
 
 		if (extraVerses.isEmpty())
-			throw new NoContentException("No extra verses found");
+			throw new ApiException(ApiError.GET_VERSES_NO_CONTENT);
 
 		GenericEntity<Collection<ExtraVerse>> entity = new GenericEntity<Collection<ExtraVerse>>(
 				extraVerses) {
@@ -86,10 +87,11 @@ public class ExtraVerseResource {
 	public Response addExtraVerse(
 			@ApiParam(value = "Verse to be added", required = true) @Valid ExtraVersePost verse) {
 
-		ExtraVerse addedVerse = verseRepository.addExtraVerse(bookId, songId, verse);
-		
-		return Response.created(getCreatedUri(addedVerse.getId().toString())).entity(addedVerse)
-				.build();
+		ExtraVerse addedVerse = verseRepository.addExtraVerse(bookId, songId,
+				verse);
+
+		return Response.created(getCreatedUri(addedVerse.getId().toString()))
+				.entity(addedVerse).build();
 
 	}
 
@@ -102,15 +104,22 @@ public class ExtraVerseResource {
 			@ApiResponse(code = 404, message = "Verse not found"),
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
-	public Response deleteSong(
-			@ApiParam(value = "Id of verse to delete", required = true) @Min(0) @PathParam("verse_id") Integer verseId) {
+	public Response deleteExtraVerse(
+			@ApiParam(value = "Id of verse to delete", required = true) @PathParam("verse_id") String verseId) {
 
-		if (verseRepository.deleteExtraVerse(bookId, songId, verseId)) {
+		// Return not found instead of bar request
+		Integer parsedId;
+		try {
+			parsedId = Integer.parseUnsignedInt(verseId);
+		} catch (NumberFormatException e) {
+			throw new ApiException(ApiError.DELETE_VERSE_NOT_FOUND);
+		}
+		
+		if (verseRepository.deleteExtraVerse(bookId, songId, parsedId)) {
 			return Response.ok("Verse deleted succesfully")
 					.type(MediaType.TEXT_PLAIN).build();
 		} else {
-			throw new NotFoundException(
-					"Could not delete verse (id not found).");
+			throw new ApiException(ApiError.DELETE_VERSE_NOT_FOUND);
 		}
 
 	}
@@ -118,12 +127,22 @@ public class ExtraVerseResource {
 	@GET
 	@ApiOperation(value = "Get data for extra verse")
 	@Path("/{verse_id}")
-	public Response getExtraVerse(@Min(0) @PathParam("verse_id") Integer verseId) {
+	public Response getExtraVerse(
+			@ApiParam(value = "Verse id", required = true) @PathParam("verse_id") String verseId) {
 
-		ExtraVerse verse = verseRepository.getExtraVerse(bookId, songId, verseId);
+		// Return not found instead of bar request
+		Integer parsedId;
+		try {
+			parsedId = Integer.parseUnsignedInt(verseId);
+		} catch (NumberFormatException e) {
+			throw new ApiException(ApiError.GET_VERSE_NOT_FOUND);
+		}
+				
+		ExtraVerse verse = verseRepository.getExtraVerse(bookId, songId,
+				parsedId);
 
 		if (verse == null)
-			throw new NotFoundException("Verse was not found.");
+			throw new ApiException(ApiError.GET_VERSE_NOT_FOUND);
 
 		return Response.ok(verse).build();
 

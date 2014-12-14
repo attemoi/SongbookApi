@@ -3,14 +3,13 @@ package fi.attemoisio.songbookapi.postgres;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLTimeoutException;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.inject.Inject;
 
 import fi.attemoisio.songbookapi.errorhandling.ApiError;
-import fi.attemoisio.songbookapi.exceptions.RepositoryException;
+import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.Song;
 import fi.attemoisio.songbookapi.repository.SongRepository;
 
@@ -57,7 +56,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 				} finally {
 					pst.close();
 				}
-		});
+		}, ApiError.GET_SONGS_ERROR, ApiError.GET_SONGS_TIMEOUT);
 
 	}
 
@@ -95,7 +94,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 			} finally {
 				pst.close();
 			}
-		});
+		}, ApiError.GET_SONG_ERROR, ApiError.GET_SONG_TIMEOUT);
 	}
 
 	@Override
@@ -122,8 +121,8 @@ public class PostgresSongRepository extends PostgresRepository implements
 				} finally {
 					pst.close();
 				}
-			});
-		} catch (RepositoryException e) {
+			}, ApiError.ADD_SONG_ERROR, ApiError.ADD_SONG_TIMEOUT);
+		} catch (ApiException e) {
 			if (e.getCause() instanceof SQLException
 					&& ((SQLException) e.getCause()).getSQLState().equals(
 							ERROR_CODE_UNIQUE_VIOLATION)) {
@@ -147,33 +146,21 @@ public class PostgresSongRepository extends PostgresRepository implements
 				pst.setString(2, bookId);
 				int affectedRows = pst.executeUpdate();
 				return affectedRows > 0;
-			} catch (SQLTimeoutException e) {
-				throw new RepositoryException(
-						ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT, e);
 			} finally {
 				pst.close();
 			}
-		});
+		}, ApiError.DELETE_SONG_ERROR, ApiError.DELETE_SONG_TIMEOUT);
 
 	}
 
 	@Override
 	public ApiError getRepositoryConnectionFailApiError() {
-		return ApiError.SONG_REPOSITORY_CONNECTION_FAIL;
+		return ApiError.SONG_REPOSITORY_ERROR;
 	}
 
 	@Override
 	public ApiError getRepositoryConnectionTimeoutApiError() {
-		return ApiError.SONG_REPOSITORY_CONNECTION_TIMEOUT;
+		return ApiError.SONG_REPOSITORY_TIMEOUT;
 	}
 
-	@Override
-	public ApiError getRepositoryRequestFailApiError() {
-		return ApiError.SONG_REPOSITORY_REQUEST_FAIL;
-	}
-
-	@Override
-	public ApiError getRepositoryRequestTimeoutApiError() {
-		return ApiError.SONG_REPOSITORY_REQUEST_TIMEOUT;
-	}
 }

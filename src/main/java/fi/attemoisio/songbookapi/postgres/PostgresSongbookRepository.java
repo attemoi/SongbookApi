@@ -10,7 +10,7 @@ import java.util.Collection;
 import javax.inject.Inject;
 
 import fi.attemoisio.songbookapi.errorhandling.ApiError;
-import fi.attemoisio.songbookapi.exceptions.RepositoryException;
+import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.Songbook;
 import fi.attemoisio.songbookapi.repository.SongbookRepository;
 
@@ -51,7 +51,7 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 			} finally {
 				pst.close();
 			}
-		});
+		}, ApiError.GET_SONGBOOKS_ERROR, ApiError.GET_SONGBOOKS_TIMEOUT);
 
 	}
 
@@ -83,7 +83,7 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 			} finally {
 				pst.close();
 			}
-		});
+		}, ApiError.GET_SONGBOOK_ERROR, ApiError.GET_SONGBOOK_TIMEOUT);
 	}
 
 	@Override
@@ -104,13 +104,12 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 
 					pst.execute();
 					return true;
-
 				} finally {
 					pst.close();
 				}
-			});
+			}, ApiError.ADD_SONGBOOK_ERROR, ApiError.ADD_SONGBOOK_TIMEOUT);
 			
-		} catch (RepositoryException e) {
+		} catch (ApiException e) {
 			if (e.getCause() instanceof SQLException
 					&& ((SQLException) e.getCause()).getSQLState().equals(ERROR_CODE_UNIQUE_VIOLATION)) {
 				return false;
@@ -134,27 +133,18 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 			} finally {
 				pst.close();
 			}
-		});
+		}, ApiError.DELETE_SONGBOOK_ERROR, ApiError.DELETE_SONGBOOK_TIMEOUT);
 
 	}
 
 	@Override
 	public ApiError getRepositoryConnectionFailApiError() {
-		return ApiError.SONGBOOK_REPOSITORY_CONNECTION_FAIL;
+		return ApiError.SONGBOOK_REPOSITORY_ERROR;
 	}
 
 	@Override
 	public ApiError getRepositoryConnectionTimeoutApiError() {
-		return ApiError.SONGBOOK_REPOSITORY_CONNECTION_TIMEOUT;
+		return ApiError.SONGBOOK_REPOSITORY_TIMEOUT;
 	}
-
-	@Override
-	public ApiError getRepositoryRequestFailApiError() {
-		return ApiError.SONGBOOK_REPOSITORY_REQUEST_FAIL;
-	}
-
-	@Override
-	public ApiError getRepositoryRequestTimeoutApiError() {
-		return ApiError.SONGBOOK_REPOSITORY_REQUEST_TIMEOUT;
-	}
+	
 }

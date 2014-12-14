@@ -1,17 +1,13 @@
 package fi.attemoisio.songbookapi.postgres;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLTimeoutException;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.inject.Inject;
 
 import fi.attemoisio.songbookapi.errorhandling.ApiError;
-import fi.attemoisio.songbookapi.exceptions.RepositoryException;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
 import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
@@ -55,17 +51,17 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 			} finally {
 				pst.close();
 			}
-		});
+		}, ApiError.GET_VERSES_ERROR, ApiError.GET_VERSES_TIMEOUT);
 
 	}
 
 	@Override
 	public ExtraVerse getExtraVerse(String bookId, String songId,
 			Integer verseId) {
-		
+
 		String sql = "SELECT id, lyrics, book_id, song_id, id FROM extra_verses"
 				+ " WHERE book_id = ? AND song_id = ? AND id = ?";
-		
+
 		return handleConnection(conn -> {
 			PreparedStatement pst = conn.prepareStatement(sql);
 			pst.setString(1, bookId);
@@ -88,7 +84,7 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 			} finally {
 				pst.close();
 			}
-		});
+		}, ApiError.GET_VERSE_ERROR, ApiError.GET_VERSE_TIMEOUT);
 	}
 
 	@Override
@@ -99,27 +95,27 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 				+ "VALUES (?, ?, ?) RETURNING id";
 
 		return handleConnection(conn -> {
-				PreparedStatement pst = conn.prepareStatement(sql);
+			PreparedStatement pst = conn.prepareStatement(sql);
+			try {
+				pst.setString(1, bookId);
+				pst.setString(2, songId);
+				pst.setString(3, verse.getLyrics());
+
+				ResultSet rs = pst.executeQuery();
 				try {
-					pst.setString(1, bookId);
-					pst.setString(2, songId);
-					pst.setString(3, verse.getLyrics());
-
-					ResultSet rs = pst.executeQuery();
-					try {
-						Integer generatedId = rs.getInt("id");
-						ExtraVerse newVerse = new ExtraVerse();
-						newVerse.setId(generatedId);
-						newVerse.setLyrics(verse.getLyrics());
-						return newVerse;
-					} finally {
-						rs.close();
-					}
-
+					Integer generatedId = rs.getInt("id");
+					ExtraVerse newVerse = new ExtraVerse();
+					newVerse.setId(generatedId);
+					newVerse.setLyrics(verse.getLyrics());
+					return newVerse;
 				} finally {
-					pst.close();
+					rs.close();
 				}
-		});
+
+			} finally {
+				pst.close();
+			}
+		}, ApiError.ADD_VERSE_ERROR, ApiError.ADD_VERSE_TIMEOUT);
 
 	}
 
@@ -129,56 +125,29 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 
 		final String sql = "DELETE FROM extra_verses WHERE id = ? AND song_id = ? and book_id = ?";
 
-		try {
-			Connection conn = driver.getConnection();
+		return handleConnection(conn -> {
+			PreparedStatement pst = conn.prepareStatement(sql);
 			try {
-				PreparedStatement pst = conn.prepareStatement(sql);
-				try {
-					pst.setInt(1, verseId);
-					pst.setString(2, songId);
-					pst.setString(3, bookId);
-					int affectedRows = pst.executeUpdate();
-					return affectedRows > 0;
-				} catch (SQLTimeoutException e) {
-					throw new RepositoryException(
-							ApiError.VERSE_REPOSITORY_REQUEST_TIMEOUT, e);
-				} finally {
-					pst.close();
-				}
-			} catch (SQLException e) {
-				throw new RepositoryException(
-						ApiError.VERSE_REPOSITORY_REQUEST_FAIL, e);
+				pst.setInt(1, verseId);
+				pst.setString(2, songId);
+				pst.setString(3, bookId);
+				int affectedRows = pst.executeUpdate();
+				return affectedRows > 0;
 			} finally {
-				conn.close();
+				pst.close();
 			}
-		} catch (SQLTimeoutException e) {
-			throw new RepositoryException(
-					ApiError.VERSE_REPOSITORY_CONNECTION_TIMEOUT, e);
-		} catch (SQLException e) {
-			throw new RepositoryException(
-					ApiError.VERSE_REPOSITORY_CONNECTION_FAIL, e);
-		}
+		}, ApiError.DELETE_VERSE_ERROR, ApiError.DELETE_VERSE_TIMEOUT);
 
 	}
 
 	@Override
 	public ApiError getRepositoryConnectionFailApiError() {
-		return ApiError.VERSE_REPOSITORY_CONNECTION_FAIL;
+		return ApiError.VERSE_REPOSITORY_ERROR;
 	}
 
 	@Override
 	public ApiError getRepositoryConnectionTimeoutApiError() {
-		return ApiError.VERSE_REPOSITORY_CONNECTION_TIMEOUT;
-	}
-
-	@Override
-	public ApiError getRepositoryRequestFailApiError() {
-		return ApiError.VERSE_REPOSITORY_REQUEST_FAIL;
-	}
-
-	@Override
-	public ApiError getRepositoryRequestTimeoutApiError() {
-		return ApiError.VERSE_REPOSITORY_REQUEST_TIMEOUT;
+		return ApiError.VERSE_REPOSITORY_TIMEOUT;
 	}
 
 }

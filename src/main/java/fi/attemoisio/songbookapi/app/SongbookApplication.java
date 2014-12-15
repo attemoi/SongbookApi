@@ -34,8 +34,6 @@ public class SongbookApplication extends ResourceConfig {
 	public SongbookApplication() {
 
 		register(new SongbookApplicationBinder());
-		register(new ApiExceptionMapper());
-		register(new ConstraintViolationExceptionMapper());
 
 		packages("fi.attemoisio.songbookapi",
 				"com.wordnik.swagger.jersey.listing");

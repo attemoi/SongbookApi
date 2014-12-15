@@ -41,69 +41,81 @@ import fi.attemoisio.songbookapi.resource.app.SongbookTestApplicationBinder;
 
 public class SongResourceTest extends JerseyTest {
 
-    @Override
-    protected Application configure() {
-        return new ResourceConfig(SongbookResource.class, SongResource.class).register(new SongbookTestApplicationBinder());
-    }
+	@Override
+	protected Application configure() {
+		return new ResourceConfig().register(
+				new SongbookTestApplicationBinder()).packages(
+				"fi.attemoisio.songbookapi");
+	}
 
-    @Test
-    public void testGetSongs() {
-    	
-    	final Response response = target("songbooks/book0/songs").request().get(); 	
-        assertEquals(200, response.getStatus());
-        
-        Collection<Song> songs = response.readEntity(new GenericType<Collection<Song>>(){});
-        assertEquals(5, songs.size());
-        
-    }
-    
-    @Test
-    public void testGetSong() {
-    	
-    	final Response response = target("songbooks/book0/songs/song0").request().get(); 	
-        assertEquals(200, response.getStatus());
-        
-        Song song = response.readEntity(Song.class);
-        assertTrue(song != null);
-        
-        final Response response2 = target("songbooks/book0/songs/non-existent-songs").request().get(); 	
-        assertEquals(404, response2.getStatus());
-        
-    }
-    
-    @Test
-    public void testAddSong() {
-    	
-    	Song song = new Song();
-    	song.setId("song123");
-    	song.setName("song name lorem ipsum");
-    	song.setExtra("asdf");
-    	song.setLyrics("asdf");
-    	song.setPageNum(234);
-    	song.setSongNumber(123);
-    	song.setOtherNotes("asdf");
-    	
-    	Entity<Song> songEntity = Entity.entity(song, MediaType.APPLICATION_JSON);
-    	final Response response = target("songbooks/book0/songs").request().post(songEntity); 	
-    	
-    	assertEquals(201, response.getStatus());
-    	
-    	song.setId("song0");
-    	songEntity = Entity.entity(song, MediaType.APPLICATION_JSON);
-    	final Response response2 = target("songbooks/book0/songs").request().post(songEntity); 	
-    	assertEquals(409, response2.getStatus());
-    	
-    }
-    
-    @Test
-    public void testDeleteSongbook() {
-    	
-    	final Response response = target("songbooks/book0/songs/song0").request().delete(); 
-        assertEquals(200, response.getStatus());
-        
-        final Response response2 = target("songbooks/book0/songs/non-existent-id").request().delete(); 	
-        assertEquals(404, response2.getStatus());
+	@Test
+	public void testGetSongs() {
 
-    }
+		final Response response = target("songbooks/book0/songs").request()
+				.get();
+		assertEquals(200, response.getStatus());
+
+		Collection<Song> songs = response
+				.readEntity(new GenericType<Collection<Song>>() {
+				});
+		assertEquals(5, songs.size());
+
+	}
+
+	@Test
+	public void testGetSong() {
+
+		final Response response = target("songbooks/book0/songs/song0")
+				.request().get();
+		assertEquals(200, response.getStatus());
+
+		Song song = response.readEntity(Song.class);
+		assertTrue(song != null);
+
+		final Response response2 = target(
+				"songbooks/book0/songs/non-existent-songs").request().get();
+		assertEquals(404, response2.getStatus());
+
+	}
+
+	@Test
+	public void testAddSong() {
+
+		Song song = new Song();
+		song.setId("song123");
+		song.setName("song name lorem ipsum");
+		song.setExtra("asdf");
+		song.setLyrics("asdf");
+		song.setPageNum(234);
+		song.setSongNumber(123);
+		song.setOtherNotes("asdf");
+
+		Entity<Song> songEntity = Entity.entity(song,
+				MediaType.APPLICATION_JSON);
+		final Response response = target("songbooks/book0/songs").request()
+				.post(songEntity);
+
+		assertEquals(201, response.getStatus());
+
+		song.setId("song0");
+		songEntity = Entity.entity(song, MediaType.APPLICATION_JSON);
+		final Response response2 = target("songbooks/book0/songs").request()
+				.post(songEntity);
+		assertEquals(409, response2.getStatus());
+
+	}
+
+	@Test
+	public void testDeleteSongbook() {
+
+		final Response response = target("songbooks/book0/songs/song0")
+				.request().delete();
+		assertEquals(200, response.getStatus());
+
+		final Response response2 = target(
+				"songbooks/book0/songs/non-existent-id").request().delete();
+		assertEquals(404, response2.getStatus());
+
+	}
 
 }

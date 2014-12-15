@@ -36,64 +36,78 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
-import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
+import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.resource.app.SongbookTestApplicationBinder;
 
 public class ExtraVerseResourceTest extends JerseyTest {
 
-    @Override
-    protected Application configure() {
-        return new ResourceConfig(SongbookResource.class, SongResource.class, ExtraVerseResource.class).register(new SongbookTestApplicationBinder());
-    }
+	@Override
+	protected Application configure() {
+		return new ResourceConfig()
+				.register(new SongbookTestApplicationBinder()).packages("fi.attemoisio.songbookapi");
+	}
 
-    @Test
-    public void testGetExtraVerses() {
-    	
-    	final Response response = target("songbooks/book0/songs/song0/extra-verses").request().get(); 	
-        assertEquals(200, response.getStatus());
-        
-        Collection<ExtraVerse> verses = response.readEntity(new GenericType<Collection<ExtraVerse>>(){});
-        assertEquals(5, verses.size());
-        
-    }
-    
-    @Test
-    public void testGetExtraVerse() {
-    	
-    	final Response response = target("songbooks/book0/songs/song0/extra-verses/0").request().get(); 	
-        assertEquals(200, response.getStatus());
-        
-        ExtraVerse verse = response.readEntity(ExtraVerse.class);
-        assertTrue(verse != null);
-        
-        final Response response2 = target("songbooks/book0/songs/song0/extra-verses/9998").request().get(); 	
-        assertEquals(404, response2.getStatus());
-        
-    }
-    
-    @Test
-    public void testAddExtraVerse() {
-    	
-    	ExtraVersePost verse = new ExtraVersePost();
-    	verse.setLyrics("asdf");
-    	
-    	Entity<ExtraVersePost> verseEntity = Entity.entity(verse, MediaType.APPLICATION_JSON);
-    	final Response response = target("songbooks/book0/songs/song0/extra-verses").request().post(verseEntity); 	
-    	
-    	assertEquals(201, response.getStatus());
-    	
-    }
-    
-    @Test
-    public void testDeleteExtraVerse() {
-    	
-    	final Response response = target("songbooks/book0/songs/song0/extra-verses/0").request().delete(); 
-        assertEquals(200, response.getStatus());
-        
-        final Response response2 = target("songbooks/book0/songs/song0/extra-verses/9998").request().delete(); 	
-        assertEquals(404, response2.getStatus());
+	@Test
+	public void testGetExtraVerses() {
 
-    }
+		final Response response = target(
+				"songbooks/book0/songs/song0/extra-verses").request().get();
+		assertEquals(200, response.getStatus());
+
+		Collection<ExtraVerse> verses = response
+				.readEntity(new GenericType<Collection<ExtraVerse>>() {
+				});
+		assertEquals(5, verses.size());
+
+	}
+
+	@Test
+	public void testGetExtraVerse() {
+
+		final Response response = target(
+				"songbooks/book0/songs/song0/extra-verses/0").request().get();
+		assertEquals(200, response.getStatus());
+
+		ExtraVerse verse = response.readEntity(ExtraVerse.class);
+		assertTrue(verse != null);
+
+		final Response response2 = target(
+				"songbooks/book0/songs/song0/extra-verses/9998").request()
+				.get();
+		assertEquals(404, response2.getStatus());
+
+	}
+
+	@Test
+	public void testAddExtraVerse() {
+
+		ExtraVersePost verse = new ExtraVersePost();
+		verse.setLyrics("asdf");
+
+		Entity<ExtraVersePost> verseEntity = Entity.entity(verse,
+				MediaType.APPLICATION_JSON);
+		final Response response = target(
+				"songbooks/book0/songs/song0/extra-verses").request().post(
+				verseEntity);
+
+		assertEquals(201, response.getStatus());
+
+	}
+
+	@Test
+	public void testDeleteExtraVerse() {
+
+		final Response response = target(
+				"songbooks/book0/songs/song0/extra-verses/0").request()
+				.delete();
+		assertEquals(200, response.getStatus());
+
+		final Response response2 = target(
+				"songbooks/book0/songs/song0/extra-verses/9998").request()
+				.delete();
+		assertEquals(404, response2.getStatus());
+
+	}
 
 }

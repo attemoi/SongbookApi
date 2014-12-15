@@ -44,7 +44,9 @@ public class SongbookResourceTest extends JerseyTest {
 
     @Override
     protected Application configure() {
-        return new ResourceConfig(SongbookResource.class, SongResource.class).register(new SongbookTestApplicationBinder());
+		return new ResourceConfig().register(
+				new SongbookTestApplicationBinder()).packages(
+				"fi.attemoisio.songbookapi");
     }
 
     @Test

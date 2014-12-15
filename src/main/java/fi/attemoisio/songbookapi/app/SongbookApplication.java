@@ -27,9 +27,6 @@ import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
-import fi.attemoisio.songbookapi.errorhandling.ApiExceptionMapper;
-import fi.attemoisio.songbookapi.errorhandling.ConstraintViolationExceptionMapper;
-
 public class SongbookApplication extends ResourceConfig {
 	public SongbookApplication() {
 

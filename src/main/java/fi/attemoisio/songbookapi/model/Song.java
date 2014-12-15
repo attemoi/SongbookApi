@@ -39,7 +39,7 @@ public class Song {
 	private String lyrics;
 	private Integer songNumber;
 	private String otherNotes;
-	private Integer pageNum;
+	private Integer pageNumber;
 	private String extra;
 	
 	@XmlElement(name = "id", nillable = true)
@@ -86,12 +86,12 @@ public class Song {
 		this.otherNotes = otherNotes;
 	}
 	
-	@XmlElement(name = "pageNum")
-	public int getPageNum() {
-		return pageNum;
+	@XmlElement(name = "page_number")
+	public int getPageNumber() {
+		return pageNumber;
 	}
-	public void setPageNum(int pageNum) {
-		this.pageNum = pageNum;
+	public void setPageNumber(int pageNum) {
+		this.pageNumber = pageNum;
 	}
 	
 	@XmlElement(name = "extra", nillable = true)

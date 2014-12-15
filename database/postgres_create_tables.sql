@@ -1,3 +1,4 @@
+
 CREATE DOMAIN dom_description TEXT CHECK (
     LENGTH(VALUE) > 0 AND
     LENGTH(VALUE) < 300
@@ -42,7 +43,7 @@ CREATE DOMAIN dom_slug TEXT CHECK (
 CREATE TABLE songbooks (
   id              dom_slug     PRIMARY KEY,
   title           dom_title    NOT NULL,
-  releaseYear     INTEGER,
+  release_year     INTEGER,
   description     dom_description,
   other_notes     dom_other_notes
 );
@@ -54,7 +55,7 @@ CREATE TABLE songs (
 	lyrics        dom_lyrics,
 	song_number   INTEGER,
 	other_notes   dom_other_notes,
-	page_num      INTEGER,
+	page_number   INTEGER,
 	book_id       dom_slug,
 	PRIMARY KEY   (id, book_id),
 	CONSTRAINT    fk_song_book   FOREIGN KEY (book_id) REFERENCES songbooks(id) ON DELETE CASCADE ON UPDATE CASCADE

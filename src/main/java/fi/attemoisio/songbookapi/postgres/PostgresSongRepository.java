@@ -24,7 +24,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 	@Override
 	public Collection<Song> getSongs(String bookId) {
 
-		String sql = "SELECT id, name, extra, lyrics, song_number, other_notes, page_num, book_id"
+		String sql = "SELECT id, name, extra, lyrics, song_number, other_notes, page_number, book_id"
 				+ " FROM songs" + " WHERE book_id = ?";
 		
 		return handleConnection(conn -> {
@@ -41,7 +41,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 							song.setId(rs.getString("id"));
 							song.setName(rs.getString("name"));
 							song.setLyrics(rs.getString("lyrics"));
-							song.setPageNum(rs.getInt("page_num"));
+							song.setPageNumber(rs.getInt("page_number"));
 							song.setExtra(rs.getString("extra"));
 							song.setSongNumber(rs.getInt("song_number"));
 							song.setOtherNotes(rs.getString("other_notes"));
@@ -63,7 +63,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 	@Override
 	public Song getSong(String bookId, String songId) {
 		
-		String sql = "SELECT id, name, extra, lyrics, song_number, other_notes, page_num, book_id"
+		String sql = "SELECT id, name, extra, lyrics, song_number, other_notes, page_number, book_id"
 				+ " FROM songs" + " WHERE id = ? AND book_id = ?";
 		
 		return handleConnection(conn -> {
@@ -79,7 +79,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 						song.setId(rs.getString("id"));
 						song.setName(rs.getString("name"));
 						song.setLyrics(rs.getString("lyrics"));
-						song.setPageNum(rs.getInt("page_num"));
+						song.setPageNumber(rs.getInt("page_number"));
 						song.setExtra(rs.getString("extra"));
 						song.setSongNumber(rs.getInt("song_number"));
 						song.setOtherNotes(rs.getString("other_notes"));
@@ -99,7 +99,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 
 	@Override
 	public boolean addSong(String bookId, Song book) {
-		final String sql = "INSERT INTO songs (id, name, extra, lyrics, song_number, other_notes, page_num, book_id) "
+		final String sql = "INSERT INTO songs (id, name, extra, lyrics, song_number, other_notes, page_number, book_id) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try {
@@ -112,7 +112,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 					pst.setString(4, book.getLyrics());
 					pst.setInt(5, book.getSongNumber());
 					pst.setString(6, book.getOtherNotes());
-					pst.setInt(7, book.getPageNum());
+					pst.setInt(7, book.getPageNumber());
 					pst.setString(8, bookId);
 
 					pst.execute();

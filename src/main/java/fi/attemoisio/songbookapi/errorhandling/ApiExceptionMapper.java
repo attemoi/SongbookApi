@@ -19,8 +19,6 @@ public class ApiExceptionMapper implements ExceptionMapper<Throwable> {
 	@Override
 	public Response toResponse(Throwable exception) {
 
-
-		
 		ErrorResponse r = new ErrorResponse();
 
 		if (exception instanceof ApiException) {

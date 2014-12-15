@@ -53,7 +53,7 @@ public class Songbook {
 		this.id = id;
 	}
 	
-	@XmlElement(name = "releaseYear", nillable=true)
+	@XmlElement(name = "release_year", nillable=true)
 	@Min(1600)
 	@Max(9999)
 	public Integer getReleaseYear() {

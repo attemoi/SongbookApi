@@ -86,7 +86,7 @@ public class SongResourceTest extends JerseyTest {
 		song.setName("song name lorem ipsum");
 		song.setExtra("asdf");
 		song.setLyrics("asdf");
-		song.setPageNum(234);
+		song.setPageNumber(234);
 		song.setSongNumber(123);
 		song.setOtherNotes("asdf");
 

@@ -26,7 +26,7 @@ public class MockSongRepository implements SongRepository {
 				song.setName("Song" + i);
 				song.setLyrics("Lyrics lorem\n ipsum dolor\n sit amet");
 				song.setOtherNotes("other note lorem");
-				song.setPageNum(i + 1);
+				song.setPageNumber(i + 1);
 				song.setSongNumber(i+1);
 				songs.add(song);
 				

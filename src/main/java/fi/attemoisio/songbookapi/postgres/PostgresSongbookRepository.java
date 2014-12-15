@@ -28,7 +28,7 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 			Statement pst = conn.createStatement();
 			try {
 				ResultSet rs = pst
-						.executeQuery("SELECT id, title, releaseYear, description, other_notes from songbooks");
+						.executeQuery("SELECT id, title, release_year, description, other_notes from songbooks");
 				try {
 
 					ArrayList<Songbook> books = new ArrayList<Songbook>();
@@ -37,7 +37,7 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 						Songbook book = new Songbook();
 						book.setId(rs.getString("id"));
 						book.setTitle(rs.getString("title"));
-						book.setReleaseYear(rs.getInt("releaseYear"));
+						book.setReleaseYear(rs.getInt("release_year"));
 						book.setDescription(rs.getString("description"));
 						book.setOtherNotes(rs.getString("other_notes"));
 						books.add(book);
@@ -59,7 +59,7 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 	public Songbook getSongbook(String id) {
 
 		return handleConnection(conn -> {
-			String sql = "SELECT id, title, releaseYear, description, other_notes from songbooks WHERE id = ?";
+			String sql = "SELECT id, title, release_year, description, other_notes from songbooks WHERE id = ?";
 			PreparedStatement pst = conn.prepareStatement(sql);
 			try {
 				pst.setMaxRows(1);
@@ -70,7 +70,7 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 						Songbook book = new Songbook();
 						book.setId(rs.getString("id"));
 						book.setTitle(rs.getString("title"));
-						book.setReleaseYear(rs.getInt("releaseYear"));
+						book.setReleaseYear(rs.getInt("release_year"));
 						book.setDescription(rs.getString("description"));
 						book.setOtherNotes(rs.getString("other_notes"));
 						return book;
@@ -92,7 +92,7 @@ public class PostgresSongbookRepository extends PostgresRepository implements
 		try {
 			
 			return handleConnection(conn -> {
-				final String sql = "INSERT INTO songbooks (id, title, releaseYear, description, other_notes) VALUES (?, ?, ?, ?, ?)";
+				final String sql = "INSERT INTO songbooks (id, title, release_year, description, other_notes) VALUES (?, ?, ?, ?, ?)";
 
 				PreparedStatement pst = conn.prepareStatement(sql);
 				try {

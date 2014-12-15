@@ -37,6 +37,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
 import fi.attemoisio.songbookapi.model.Songbook;
+import fi.attemoisio.songbookapi.model.SongbookPost;
 import fi.attemoisio.songbookapi.resource.app.SongbookTestApplicationBinder;
 
 
@@ -74,28 +75,6 @@ public class SongbookResourceTest extends JerseyTest {
     }
     
     @Test
-    public void testAddSongbook() {
-    	
-    	Songbook book = new Songbook();
-    	book.setId("book123");
-    	book.setTitle("book title lorem ipsum");
-    	book.setOtherNotes("other notes book lorem ipsum");
-    	book.setReleaseYear(1999);
-    	book.setDescription("description lorem ipsum");
-    	
-    	Entity<Songbook> bookEntity = Entity.entity(book, MediaType.APPLICATION_JSON);
-    	final Response response = target("songbooks/").request().post(bookEntity); 	
-    	
-    	assertEquals(201, response.getStatus());
-    	
-    	book.setId("book0");
-    	bookEntity = Entity.entity(book, MediaType.APPLICATION_JSON);
-    	final Response response2 = target("songbooks/").request().post(bookEntity); 	
-    	assertEquals(409, response2.getStatus());
-    	
-    }
-    
-    @Test
     public void testDeleteSongbook() {
     	
     	final Response response = target("songbooks/book0").request().delete(); 
@@ -105,5 +84,50 @@ public class SongbookResourceTest extends JerseyTest {
         assertEquals(404, response2.getStatus());
 
     }
+    
+    @Test
+	public void testPutSongbook() {
+
+		Songbook book = new Songbook();
+		book.setId("book0");
+		book.setTitle("new name");
+		book.setOtherNotes("asdf");
+		book.setDescription("asdf");
+		book.setReleaseYear(1999);
+		
+		Entity<Songbook> existingSongbookEntity = Entity.entity(book, MediaType.APPLICATION_JSON);
+		
+		final Response response = target("songbooks/")
+				.request().put(existingSongbookEntity);
+		assertEquals(200, response.getStatus());
+		
+		book.setId("non-existent-id");
+		Entity<Songbook> newSongbookEntity = Entity.entity(book, MediaType.APPLICATION_JSON);;
+		final Response response2 = target("songbooks/")
+				.request().put(newSongbookEntity);
+		assertEquals(201, response2.getStatus());
+
+	}
+    
+	@Test
+	public void testPostSongbook() {
+
+		SongbookPost book = new SongbookPost();
+		book.setOtherNotes("asdf");
+		book.setTitle("asdf");
+		book.setOtherNotes("asdf");
+		book.setReleaseYear(1999);
+		book.setDescription("asdf");
+
+		Entity<SongbookPost> bookEntity = Entity.entity(book,
+				MediaType.APPLICATION_JSON);
+		
+		final Response response = target("songbooks/").request()
+				.post(bookEntity);
+
+		assertEquals(201, response.getStatus());
+		
+	}
+
 
 }

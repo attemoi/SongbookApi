@@ -15,7 +15,7 @@ public interface ExtraVerseRepository {
 	public Collection<ExtraVerse> getExtraVerses(String bookId, String songId);
 
 	/**
-	 * Fetches an extra verse for a song.
+	 * Gets data for a verse.
 	 * 
 	 * @param bookId
 	 * @param songId
@@ -26,7 +26,7 @@ public interface ExtraVerseRepository {
 			Integer extraVerseId);
 
 	/**
-	 * Adds an extra verse to a song.
+	 * Adds a new verse.
 	 * 
 	 * @param bookId
 	 * @param songId
@@ -34,7 +34,17 @@ public interface ExtraVerseRepository {
 	 * @return True, if the verse was successfully added. False, if a verse with
 	 *         the given id already exists.
 	 */
-	public ExtraVerse addExtraVerse(String bookId, String songId, ExtraVersePost verse);
+	public ExtraVerse postExtraVerse(String bookId, String songId, ExtraVersePost verse);
+	
+	/**
+	 * Updates verse data.
+	 * 
+	 * @param bookId
+	 * @param songId
+	 * @param verse
+	 * @return 
+	 */
+	public void patchExtraVerse(String bookId, String songId, ExtraVerse verse);
 
 	/**
 	 * Deletes an extra verse from the repository

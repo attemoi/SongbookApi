@@ -26,11 +26,11 @@ public class ConstraintViolationExceptionMapper implements
 
 	@Override
 	public Response toResponse(final ConstraintViolationException exception) {
-		
+
 		ValidationErrorResponse em = new ValidationErrorResponse();
 		em.setCode(ApiError.VALIDATION.getCode());
 		em.setMessage(ApiError.VALIDATION.getDescription());
-		
+
 		List<ValidationError> errors = new ArrayList<ValidationError>();
 		for (@SuppressWarnings("rawtypes")
 		ConstraintViolation violation : exception.getConstraintViolations()) {

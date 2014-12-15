@@ -88,7 +88,7 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 	}
 
 	@Override
-	public ExtraVerse addExtraVerse(String bookId, String songId,
+	public ExtraVerse postExtraVerse(String bookId, String songId,
 			ExtraVersePost verse) {
 
 		final String sql = "INSERT INTO extra_verses (book_id, song_id, lyrics) "
@@ -97,6 +97,7 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 		return handleConnection(conn -> {
 			PreparedStatement pst = conn.prepareStatement(sql);
 			try {
+
 				pst.setString(1, bookId);
 				pst.setString(2, songId);
 				pst.setString(3, verse.getLyrics());
@@ -142,6 +143,40 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 			}
 		}, ApiError.DELETE_VERSE_ERROR, ApiError.DELETE_VERSE_TIMEOUT);
 
+	}
+
+	@Override
+	public void patchExtraVerse(String bookId, String songId,
+			ExtraVerse verse) {
+		
+		final String sql = "UPDATE extra_verses "
+				+ " SET lyrics = ? WHERE id = ? AND book_id = ? AND song_id = ?";
+
+		handleConnection(conn -> {
+			
+			PreparedStatement pst = conn.prepareStatement(sql);
+			
+			try {
+
+				// SET
+				pst.setString(1, verse.getLyrics());
+				pst.setInt(2, verse.getId());
+				pst.setString(3, bookId);
+				pst.setString(4, songId);
+
+				int updatedRows = pst.executeUpdate();
+				
+				if (updatedRows == 0) {
+					throw new fi.attemoisio.songbookapi.exceptions.ApiException(ApiError.UPDATE_VERSE_NOT_FOUND);
+				}
+
+			} finally {
+				pst.close();
+			}
+			
+			return null;
+
+		}, ApiError.UPDATE_VERSE_ERROR, ApiError.UPDATE_VERSE_TIMEOUT);
 	}
 
 	@Override

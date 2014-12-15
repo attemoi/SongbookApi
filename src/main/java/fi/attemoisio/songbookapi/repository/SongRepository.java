@@ -30,7 +30,7 @@ public interface SongRepository {
 	 * @param song
 	 * @return Created song object.
 	 */
-	public Song addSong(String bookId, SongPost song);
+	public Song postSong(String bookId, SongPost song);
 	
 	/**
 	 * Adds or updates a song. (Upsert)
@@ -39,7 +39,7 @@ public interface SongRepository {
 	 * @param song
 	 * @return 1, if row was added. 2, if row was inserted. 0 for failure.
 	 */
-	public UpdateResult updateSong(String bookId, Song song);
+	public PutResult putSong(String bookId, Song song);
 
 	/**
 	 * Deletes a song from the repository
@@ -50,10 +50,10 @@ public interface SongRepository {
 	 */
 	public boolean deleteSong(String bookId, String songId);
 
-	public class UpdateResult {
+	public class PutResult {
 		private int updatedRows;
 		private String insertedId;
-		public UpdateResult(int updatedRows, String insertedId) {
+		public PutResult(int updatedRows, String insertedId) {
 			this.updatedRows = updatedRows;
 			this.insertedId = insertedId;
 		}

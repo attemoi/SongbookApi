@@ -101,7 +101,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 	}
 
 	@Override
-	public Song addSong(String bookId, SongPost song) {
+	public Song postSong(String bookId, SongPost song) {
 
 		final String sql = "INSERT INTO songs (id, name, extra, lyrics, song_number, other_notes, page_number, book_id)"
 				+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -164,38 +164,9 @@ public class PostgresSongRepository extends PostgresRepository implements
 		}, ApiError.ADD_SONG_ERROR, ApiError.ADD_SONG_TIMEOUT);
 
 	}
-
+	
 	@Override
-	public boolean deleteSong(String bookId, String songId) {
-
-		final String sql = "DELETE FROM songs WHERE id = ? AND book_id = ?";
-
-		return handleConnection(conn -> {
-			PreparedStatement pst = conn.prepareStatement(sql);
-			try {
-				pst.setString(1, songId);
-				pst.setString(2, bookId);
-				int affectedRows = pst.executeUpdate();
-				return affectedRows > 0;
-			} finally {
-				pst.close();
-			}
-		}, ApiError.DELETE_SONG_ERROR, ApiError.DELETE_SONG_TIMEOUT);
-
-	}
-
-	@Override
-	public ApiError getRepositoryConnectionFailApiError() {
-		return ApiError.SONG_REPOSITORY_ERROR;
-	}
-
-	@Override
-	public ApiError getRepositoryConnectionTimeoutApiError() {
-		return ApiError.SONG_REPOSITORY_TIMEOUT;
-	}
-
-	@Override
-	public UpdateResult updateSong(final String bookId, final Song song) {
+	public PutResult putSong(final String bookId, final Song song) {
 		
 		final String sql = "UPDATE songs "
 		+ " SET name = ?, extra = ?, lyrics = ?, song_number = ?, other_notes = ?, page_number = ? WHERE id = ? AND book_id = ?;"
@@ -243,13 +214,42 @@ public class PostgresSongRepository extends PostgresRepository implements
 						insertedId = rs.getString("id");
 				}
 
-				return new UpdateResult(updateCount, insertedId);
+				return new PutResult(updateCount, insertedId);
 	
 			} finally {
 				pst.close();
 			}
 	
 		}, ApiError.UPDATE_SONG_ERROR, ApiError.UPDATE_SONG_TIMEOUT);
+	}
+
+	@Override
+	public boolean deleteSong(String bookId, String songId) {
+
+		final String sql = "DELETE FROM songs WHERE id = ? AND book_id = ?";
+
+		return handleConnection(conn -> {
+			PreparedStatement pst = conn.prepareStatement(sql);
+			try {
+				pst.setString(1, songId);
+				pst.setString(2, bookId);
+				int affectedRows = pst.executeUpdate();
+				return affectedRows > 0;
+			} finally {
+				pst.close();
+			}
+		}, ApiError.DELETE_SONG_ERROR, ApiError.DELETE_SONG_TIMEOUT);
+
+	}
+
+	@Override
+	public ApiError getRepositoryConnectionFailApiError() {
+		return ApiError.SONG_REPOSITORY_ERROR;
+	}
+
+	@Override
+	public ApiError getRepositoryConnectionTimeoutApiError() {
+		return ApiError.SONG_REPOSITORY_TIMEOUT;
 	}
 
 }

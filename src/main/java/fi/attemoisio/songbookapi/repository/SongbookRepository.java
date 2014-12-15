@@ -3,6 +3,7 @@ package fi.attemoisio.songbookapi.repository;
 import java.util.Collection;
 
 import fi.attemoisio.songbookapi.model.Songbook;
+import fi.attemoisio.songbookapi.model.SongbookPost;
 
 public interface SongbookRepository {
 
@@ -22,13 +23,20 @@ public interface SongbookRepository {
 	public Songbook getSongbook(String id);
 
 	/**
-	 * Adds a songbook to the repository.
+	 * Creates new songbook. Id is generated automatically from title.
 	 * 
 	 * @param book
-	 * @return True, if the book was successfully added. False, if the book with
-	 *         the given id already exists.
+	 * @return Created songbook.
 	 */
-	public boolean addSongbook(Songbook book);
+	public Songbook postSongbook(SongbookPost book);
+	
+	/**
+	 * Adds or updates a songbook.
+	 * 
+	 * @param book
+	 * @return PostResult with information about the operation.
+	 */
+	public PutResult putSongbook(Songbook book);
 
 	/**
 	 * Deletes a songbook from the repository
@@ -38,5 +46,20 @@ public interface SongbookRepository {
 	 *         with the given id was not found.
 	 */
 	public boolean deleteSongbook(String id);
+	
+	public class PutResult {
+		private int updatedRows;
+		private String insertedId;
+		public PutResult(int updatedRows, String insertedId) {
+			this.updatedRows = updatedRows;
+			this.insertedId = insertedId;
+		}
+		public String getInsertedId() {
+			return insertedId;
+		}
+		public int getUpdatedRows() {
+			return updatedRows;
+		}
+	}
 
 }

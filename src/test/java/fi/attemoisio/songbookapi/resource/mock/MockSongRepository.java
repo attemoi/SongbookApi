@@ -73,9 +73,10 @@ public class MockSongRepository implements SongRepository {
 	}
 
 	@Override
-	public Song addSong(String bookId, SongPost song) {
+	public Song postSong(String bookId, SongPost song) {
 		
 		Collection<Song> songs = songMap.get(bookId);
+		
 		Song newSong = new Song();
 		newSong.setId("song" + sequenceNum);
 		newSong.setName(song.getName());
@@ -89,20 +90,19 @@ public class MockSongRepository implements SongRepository {
 	}
 
 	@Override
-	public UpdateResult updateSong(String bookId, Song song) {
-		
+	public PutResult putSong(String bookId, Song song) {
+
 		Song existingSong = getSong(bookId, song.getId());
 			
 		if (existingSong == null) {
-			Song insertedSong = addSong(bookId, song);
-			return new UpdateResult(0, insertedSong.getId());
+			return new PutResult(0, song.getId());
 		} else {
 			existingSong.setName(song.getName());
 			existingSong.setLyrics(song.getLyrics());
 			existingSong.setOtherNotes(song.getOtherNotes());
 			existingSong.setPageNumber(song.getPageNumber());
 			existingSong.setSongNumber(song.getSongNumber());
-			return new UpdateResult(1, null);
+			return new PutResult(1, null);
 		}
 
 	}

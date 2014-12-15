@@ -64,6 +64,7 @@ public enum ApiError {
 	
 	UPDATE_VERSE_ERROR(4200, "Failed to update verse data.", Response.Status.INTERNAL_SERVER_ERROR),
 	UPDATE_VERSE_TIMEOUT(4201, "Verse update timed out.", Response.Status.SERVICE_UNAVAILABLE),
+	UPDATE_VERSE_NOT_FOUND(4202, "Could not update verse (not found).", Response.Status.INTERNAL_SERVER_ERROR),
 
 	DELETE_VERSE_ERROR(4300, "Failed to delete verse.", Response.Status.INTERNAL_SERVER_ERROR),
 	DELETE_VERSE_TIMEOUT(4301, "Verse delete request timed out.", Response.Status.SERVICE_UNAVAILABLE),

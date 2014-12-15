@@ -31,7 +31,7 @@ import fi.attemoisio.songbookapi.model.Song;
 import fi.attemoisio.songbookapi.model.SongPost;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
-import fi.attemoisio.songbookapi.repository.SongRepository.UpdateResult;
+import fi.attemoisio.songbookapi.repository.SongRepository.PutResult;
 
 //@Path("/songs")
 @RequestScoped
@@ -88,15 +88,15 @@ public class SongResource {
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	@Consumes("application/json")
-	public Response addSong(
+	public Response postSong(
 			@ApiParam(value = "Song to be added", required = true) @Valid SongPost song) {
 
-		Song newSong = songRepository.addSong(bookId, song);
-			
+		Song newSong = songRepository.postSong(bookId, song);
+
 		return Response.created(getCreatedUri(bookId)).entity(newSong).build();
 
 	}
-	
+
 	@PUT
 	@ApiOperation(value = "Update existing or add a new song.")
 	@ApiResponses(value = {
@@ -106,18 +106,18 @@ public class SongResource {
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	@Consumes("application/json")
-	public Response updateSong(
+	public Response putSong(
 			@ApiParam(value = "Song to be added", required = true) @Valid Song song) {
 
-		UpdateResult r = songRepository.updateSong(bookId, song);
-			
+		PutResult r = songRepository.putSong(bookId, song);
+
 		if (r.getUpdatedRows() > 0) {
-			
+
 			return Response.ok("Song data updated succesfully.")
 					.type(MediaType.TEXT_PLAIN).build();
-			
+
 		} else {
-			
+
 			Song newSong = new Song();
 			newSong.setId(r.getInsertedId());
 			newSong.setExtra(song.getExtra());
@@ -126,12 +126,11 @@ public class SongResource {
 			newSong.setOtherNotes(song.getOtherNotes());
 			newSong.setPageNumber(song.getPageNumber());
 			newSong.setSongNumber(song.getSongNumber());
-			
-			return Response.created(getCreatedUri(bookId)).entity(newSong).build();
-		}
-			
 
-		
+			return Response.created(getCreatedUri(r.getInsertedId())).entity(newSong)
+					.build();
+		}
+
 	}
 
 	@DELETE
@@ -178,8 +177,7 @@ public class SongResource {
 		if (song == null)
 			throw new ApiException(ApiError.GET_SONG_NOT_FOUND);
 
-		return new ExtraVerseResource(uriInfo, verseRepository, bookId,
-				songId);
+		return new ExtraVerseResource(uriInfo, verseRepository, bookId, songId);
 
 	}
 

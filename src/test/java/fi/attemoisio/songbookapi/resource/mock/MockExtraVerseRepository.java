@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import fi.attemoisio.songbookapi.model.ExtraVersePost;
+import fi.attemoisio.songbookapi.errorhandling.ApiError;
+import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
+import fi.attemoisio.songbookapi.model.ExtraVersePost;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 
 public class MockExtraVerseRepository implements ExtraVerseRepository {
@@ -58,7 +60,7 @@ public class MockExtraVerseRepository implements ExtraVerseRepository {
 	}
 
 	@Override
-	public ExtraVerse addExtraVerse(String bookId, String songId, ExtraVersePost verse) {
+	public ExtraVerse postExtraVerse(String bookId, String songId, ExtraVersePost verse) {
 		Collection<ExtraVerse> verses = bookMap.get(bookId).get(songId);
 		ExtraVerse newVerse = new ExtraVerse();
 		newVerse.setId(idSequence.getAndIncrement());
@@ -78,6 +80,20 @@ public class MockExtraVerseRepository implements ExtraVerseRepository {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void patchExtraVerse(String bookId, String songId,
+			ExtraVerse verse) {
+		
+		ExtraVerse existingVerse = getExtraVerse(bookId, songId, verse.getId());
+		
+		if (existingVerse == null) {
+			throw new ApiException(ApiError.UPDATE_VERSE_NOT_FOUND);
+		}
+		
+		existingVerse.setLyrics(verse.getLyrics());
+
 	}
 
 }

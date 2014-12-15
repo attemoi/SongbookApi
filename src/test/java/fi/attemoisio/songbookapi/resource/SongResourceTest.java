@@ -80,7 +80,7 @@ public class SongResourceTest extends JerseyTest {
 	}
 
 	@Test
-	public void testAddSong() {
+	public void testPostSong() {
 
 		SongPost song = new SongPost();
 		song.setName("song name lorem ipsum");
@@ -114,7 +114,7 @@ public class SongResourceTest extends JerseyTest {
 	}
 	
 	@Test
-	public void testUpdateSongbook() {
+	public void testPutSongbook() {
 
 		Song song = new Song();
 		song.setId("song0");

@@ -10,9 +10,9 @@ import fi.attemoisio.songbookapi.validation.Text;
 
 @XmlRootElement(name = "ExtraVerse")
 @ApiModel(description = "Extra verse model")
-@XmlType(name="")
+@XmlType(name = "")
 public class ExtraVersePost {
-	
+
 	private String lyrics;
 
 	@XmlElement(name = "lyrics", nillable = false)
@@ -20,9 +20,9 @@ public class ExtraVersePost {
 	public String getLyrics() {
 		return lyrics;
 	}
-	
+
 	public void setLyrics(String lyrics) {
 		this.lyrics = lyrics;
-	}	
-	
+	}
+
 }

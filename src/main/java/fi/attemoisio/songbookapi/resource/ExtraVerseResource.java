@@ -24,6 +24,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import com.wordnik.swagger.annotations.ApiResponse;
 import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.jaxrs.PATCH;
 
 import fi.attemoisio.songbookapi.errorhandling.ApiError;
 import fi.attemoisio.songbookapi.exceptions.ApiException;
@@ -76,10 +77,28 @@ public class ExtraVerseResource {
 		return Response.ok(entity).build();
 	}
 
-	@POST
-	@ApiOperation(value = "Add a new verse for a song")
+	@PATCH
+	@ApiOperation(value = "Update verse data")
 	@ApiResponses(value = {
-			@ApiResponse(code = 201, message = "Verse added succesfully"),
+			@ApiResponse(code = 200, message = "Verse data updated successfully"),
+			@ApiResponse(code = 201, message = "New verse created succesfully"),
+			@ApiResponse(code = 400, message = "Invalid input"),
+			@ApiResponse(code = 500, message = "Internal server error"),
+			@ApiResponse(code = 503, message = "Service unavailable") })
+	@Consumes("application/json")
+	public Response updateExtraVerse(
+			@ApiParam(value = "Verse to be added", required = true) @Valid ExtraVerse verse) {
+
+		verseRepository.patchExtraVerse(bookId, songId, verse);
+
+		return Response.ok("Verse data updated succesfully.").type(MediaType.TEXT_PLAIN).build();
+
+	}
+	
+	@POST
+	@ApiOperation(value = "Add a new verse.")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Verse created succesfully"),
 			@ApiResponse(code = 400, message = "Invalid input"),
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
@@ -87,11 +106,9 @@ public class ExtraVerseResource {
 	public Response addExtraVerse(
 			@ApiParam(value = "Verse to be added", required = true) @Valid ExtraVersePost verse) {
 
-		ExtraVerse addedVerse = verseRepository.addExtraVerse(bookId, songId,
-				verse);
+		ExtraVerse newVerse = verseRepository.postExtraVerse(bookId, songId, verse);
 
-		return Response.created(getCreatedUri(addedVerse.getId().toString()))
-				.entity(addedVerse).build();
+		return Response.created(getCreatedUri(bookId)).entity(newVerse).build();
 
 	}
 

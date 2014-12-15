@@ -30,6 +30,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -48,22 +49,27 @@ import com.wordnik.swagger.annotations.ApiResponses;
 import fi.attemoisio.songbookapi.errorhandling.ApiError;
 import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.Songbook;
+import fi.attemoisio.songbookapi.model.SongbookPost;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
 import fi.attemoisio.songbookapi.repository.SongbookRepository;
+import fi.attemoisio.songbookapi.repository.SongbookRepository.PutResult;
 import fi.attemoisio.songbookapi.validation.Slug;
-
 
 @Path("songbooks")
 @Api(value = "songbooks", description = "Operations about songbooks")
 @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN })
 public class SongbookResource {
 
-	@Context UriInfo uriInfo;
+	@Context
+	UriInfo uriInfo;
 
-	@Inject SongbookRepository songbookRepository;
-	@Inject SongRepository songRepository;
-	@Inject ExtraVerseRepository verseRepository;
+	@Inject
+	SongbookRepository songbookRepository;
+	@Inject
+	SongRepository songRepository;
+	@Inject
+	ExtraVerseRepository verseRepository;
 
 	private URI getCreatedUri(String resourceId) {
 		return uriInfo.getRequestUri().resolve("songbooks").resolve(resourceId);
@@ -77,7 +83,7 @@ public class SongbookResource {
 			@ApiResponse(code = 408, message = "Request timeout"),
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
-	public Response getSongbooks()  {
+	public Response getSongbooks() {
 
 		Collection<Songbook> books;
 
@@ -101,14 +107,46 @@ public class SongbookResource {
 			@ApiResponse(code = 500, message = "Internal server error"),
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	@Consumes("application/json")
-	public Response addSongbook(
+	public Response postSongbook(
+			@ApiParam(value = "Songbook to be added", required = true) @Valid SongbookPost book) {
+
+		Songbook createdBook = songbookRepository.postSongbook(book);
+
+		return Response.created(getCreatedUri(createdBook.getId()))
+				.entity(createdBook).build();
+
+	}
+	
+	@PUT
+	@ApiOperation(value = "Update existing or create a new songbook")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Songbook data updated succesfully"),
+			@ApiResponse(code = 201, message = "Songbook added succesfully"),
+			@ApiResponse(code = 400, message = "Invalid input"),
+			@ApiResponse(code = 500, message = "Internal server error"),
+			@ApiResponse(code = 503, message = "Service unavailable") })
+	@Consumes("application/json")
+	public Response putSongbook(
 			@ApiParam(value = "Songbook to be added", required = true) @Valid Songbook book) {
 
-		if (songbookRepository.addSongbook(book)) {
-			return Response.created(getCreatedUri(book.getId())).entity(book)
-					.build();
+		PutResult r = songbookRepository.putSongbook(book);
+		
+		if (r.getUpdatedRows() > 0) {
+
+			return Response.ok("Songbook data updated succesfully.")
+					.type(MediaType.TEXT_PLAIN).build();
+
 		} else {
-			throw new ApiException(ApiError.ADD_SONGBOOK_CONFLICT);
+
+			Songbook newSongbook = new Songbook();
+			newSongbook.setId(r.getInsertedId());
+			newSongbook.setTitle(book.getTitle());
+			newSongbook.setOtherNotes(book.getOtherNotes());
+			newSongbook.setDescription(book.getDescription());
+			newSongbook.setReleaseYear(book.getReleaseYear());
+
+			return Response.created(getCreatedUri(r.getInsertedId())).entity(newSongbook)
+					.build();
 		}
 
 	}
@@ -133,30 +171,32 @@ public class SongbookResource {
 		}
 
 	}
-	
+
 	@GET
 	@ApiOperation(value = "Get songbook data")
 	@Path("/{book_id}")
 	public Response getSongbook(@Slug @PathParam("book_id") String bookId) {
-		
+
 		Songbook book = songbookRepository.getSongbook(bookId);
-		
+
 		if (book == null)
 			throw new ApiException(ApiError.GET_SONGBOOK_NOT_FOUND);
-		
+
 		return Response.ok(book).build();
-		
+
 	}
-	
+
 	@Path("/{book_id}/songs")
-	public SongResource locateToSongResource(@Slug @PathParam("book_id") String bookId) {
-		
+	public SongResource locateToSongResource(
+			@Slug @PathParam("book_id") String bookId) {
+
 		Songbook book = songbookRepository.getSongbook(bookId);
-		
+
 		if (book == null)
 			throw new ApiException(ApiError.GET_SONGBOOK_NOT_FOUND);
-		
-		return new SongResource(uriInfo, songRepository, verseRepository, book.getId());
-		
+
+		return new SongResource(uriInfo, songRepository, verseRepository,
+				book.getId());
+
 	}
 }

@@ -34,6 +34,7 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fi.attemoisio.songbookapi.model.ExtraVerse;
@@ -92,6 +93,30 @@ public class ExtraVerseResourceTest extends JerseyTest {
 				verseEntity);
 
 		assertEquals(201, response.getStatus());
+
+	}
+	
+	@Ignore // because PATCH not supported
+	@Test
+	public void testUpdateExtraVerse() {
+
+		ExtraVerse verse = new ExtraVerse();
+		verse.setLyrics("asdf");
+		verse.setId(1);
+
+		Entity<ExtraVerse> verseEntity = Entity.entity(verse,
+				MediaType.APPLICATION_JSON);
+		final Response response = target(
+				"songbooks/book0/songs/song0/extra-verses").request().method("PATCH", verseEntity);
+
+		assertEquals(200, response.getStatus());
+		
+		verse.setId(991929); // non-existent id
+		Entity<ExtraVerse> newVerseEntity = Entity.entity(verse,
+				MediaType.APPLICATION_JSON);
+		final Response response2 = target(
+				"songbooks/book0/songs/song0/extra-verses").request().method("PATCH", newVerseEntity);
+		assertEquals(404, response2.getStatus());
 
 	}
 

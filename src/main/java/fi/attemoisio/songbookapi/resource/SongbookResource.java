@@ -108,7 +108,7 @@ public class SongbookResource {
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	@Consumes("application/json")
 	public Response postSongbook(
-			@ApiParam(value = "Songbook to be added", required = true) @Valid SongbookPost book) {
+			@ApiParam(value = "Songbook to be added", required = true) @Valid Songbook book) {
 
 		Songbook createdBook = songbookRepository.postSongbook(book);
 

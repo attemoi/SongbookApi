@@ -75,6 +75,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 				try {
 
 					if (rs.next()) {
+						
 						Song song = new Song();
 						song.setId(rs.getString("id"));
 						song.setName(rs.getString("name"));
@@ -84,6 +85,7 @@ public class PostgresSongRepository extends PostgresRepository implements
 						song.setSongNumber(rs.getInt("song_number"));
 						song.setOtherNotes(rs.getString("other_notes"));
 						return song;
+						
 					} else {
 						return null;
 					}

@@ -69,7 +69,7 @@ public class Song {
 		this.lyrics = lyrics;
 	}
 	
-	@XmlElement(name = "songNumber")
+	@XmlElement(name = "song_number")
 	public Integer getSongNumber() {
 		return songNumber;
 	}
@@ -77,7 +77,7 @@ public class Song {
 		this.songNumber = songNumber;
 	}
 	
-	@XmlElement(name = "otherNotes", nillable = true)
+	@XmlElement(name = "other_notes", nillable = true)
 	@Text
 	public String getOtherNotes() {
 		return otherNotes;

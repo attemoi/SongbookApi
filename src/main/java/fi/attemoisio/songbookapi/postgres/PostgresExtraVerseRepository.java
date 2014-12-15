@@ -103,11 +103,15 @@ public class PostgresExtraVerseRepository extends PostgresRepository implements
 
 				ResultSet rs = pst.executeQuery();
 				try {
-					Integer generatedId = rs.getInt("id");
-					ExtraVerse newVerse = new ExtraVerse();
-					newVerse.setId(generatedId);
-					newVerse.setLyrics(verse.getLyrics());
-					return newVerse;
+					if (rs.next()) {
+						Integer generatedId = rs.getInt("id");
+						ExtraVerse newVerse = new ExtraVerse();
+						newVerse.setId(generatedId);
+						newVerse.setLyrics(verse.getLyrics());
+						return newVerse;
+					} else {
+						return null;
+					}
 				} finally {
 					rs.close();
 				}

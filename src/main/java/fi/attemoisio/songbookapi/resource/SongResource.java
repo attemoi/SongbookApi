@@ -135,7 +135,7 @@ public class SongResource {
 
 	@DELETE
 	@Path("/{song_id}")
-	@ApiOperation(value = "Delete a song. Warning! This will also delete all songs and verses related to the book.")
+	@ApiOperation(value = "Delete a song and its' extra verses.")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Song deleted succesfully"),
 			@ApiResponse(code = 400, message = "Invalid input"),

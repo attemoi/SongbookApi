@@ -49,7 +49,6 @@ import com.wordnik.swagger.annotations.ApiResponses;
 import fi.attemoisio.songbookapi.errorhandling.ApiError;
 import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.Songbook;
-import fi.attemoisio.songbookapi.model.SongbookPost;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
 import fi.attemoisio.songbookapi.repository.SongbookRepository;
@@ -153,7 +152,7 @@ public class SongbookResource {
 
 	@DELETE
 	@Path("/{book_id}")
-	@ApiOperation(value = "Delete a songbook")
+	@ApiOperation(value = "Delete a songbook and all related songs and verses.")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Songbook deleted succesfully"),
 			@ApiResponse(code = 400, message = "Invalid input"),

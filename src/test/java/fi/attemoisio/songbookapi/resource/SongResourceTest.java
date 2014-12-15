@@ -37,6 +37,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 
 import fi.attemoisio.songbookapi.model.Song;
+import fi.attemoisio.songbookapi.model.SongPost;
 import fi.attemoisio.songbookapi.resource.app.SongbookTestApplicationBinder;
 
 public class SongResourceTest extends JerseyTest {
@@ -81,8 +82,7 @@ public class SongResourceTest extends JerseyTest {
 	@Test
 	public void testAddSong() {
 
-		Song song = new Song();
-		song.setId("song123");
+		SongPost song = new SongPost();
 		song.setName("song name lorem ipsum");
 		song.setExtra("asdf");
 		song.setLyrics("asdf");
@@ -90,19 +90,14 @@ public class SongResourceTest extends JerseyTest {
 		song.setSongNumber(123);
 		song.setOtherNotes("asdf");
 
-		Entity<Song> songEntity = Entity.entity(song,
+		Entity<SongPost> songEntity = Entity.entity(song,
 				MediaType.APPLICATION_JSON);
+		
 		final Response response = target("songbooks/book0/songs").request()
 				.post(songEntity);
 
 		assertEquals(201, response.getStatus());
-
-		song.setId("song0");
-		songEntity = Entity.entity(song, MediaType.APPLICATION_JSON);
-		final Response response2 = target("songbooks/book0/songs").request()
-				.post(songEntity);
-		assertEquals(409, response2.getStatus());
-
+		
 	}
 
 	@Test
@@ -115,6 +110,32 @@ public class SongResourceTest extends JerseyTest {
 		final Response response2 = target(
 				"songbooks/book0/songs/non-existent-id").request().delete();
 		assertEquals(404, response2.getStatus());
+
+	}
+	
+	@Test
+	public void testUpdateSongbook() {
+
+		Song song = new Song();
+		song.setId("song0");
+		song.setName("new name");
+		song.setExtra("asdf");
+		song.setLyrics("asdf");
+		song.setPageNumber(234);
+		song.setSongNumber(123);
+		song.setOtherNotes("asdf");
+		
+		Entity<Song> existingSongEntity = Entity.entity(song, MediaType.APPLICATION_JSON);
+		
+		final Response response = target("songbooks/book0/songs/")
+				.request().put(existingSongEntity);
+		assertEquals(200, response.getStatus());
+		
+		song.setId("non-existent-id");
+		Entity<Song> newSongEntity = Entity.entity(song, MediaType.APPLICATION_JSON);;
+		final Response response2 = target("songbooks/book0/songs/")
+				.request().put(newSongEntity);
+		assertEquals(201, response2.getStatus());
 
 	}
 

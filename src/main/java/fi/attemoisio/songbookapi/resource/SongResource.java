@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -27,9 +28,10 @@ import com.wordnik.swagger.annotations.ApiResponses;
 import fi.attemoisio.songbookapi.errorhandling.ApiError;
 import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.Song;
+import fi.attemoisio.songbookapi.model.SongPost;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
-import fi.attemoisio.songbookapi.validation.Slug;
+import fi.attemoisio.songbookapi.repository.SongRepository.UpdateResult;
 
 //@Path("/songs")
 @RequestScoped
@@ -78,7 +80,7 @@ public class SongResource {
 	}
 
 	@POST
-	@ApiOperation(value = "Add a new song")
+	@ApiOperation(value = "Add a new song. Id will be generated automatically.")
 	@ApiResponses(value = {
 			@ApiResponse(code = 201, message = "Song added succesfully"),
 			@ApiResponse(code = 400, message = "Invalid input"),
@@ -87,19 +89,54 @@ public class SongResource {
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	@Consumes("application/json")
 	public Response addSong(
+			@ApiParam(value = "Song to be added", required = true) @Valid SongPost song) {
+
+		Song newSong = songRepository.addSong(bookId, song);
+			
+		return Response.created(getCreatedUri(bookId)).entity(newSong).build();
+
+	}
+	
+	@PUT
+	@ApiOperation(value = "Update existing or add a new song.")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Song updated succesfully"),
+			@ApiResponse(code = 201, message = "New song created succesfully"),
+			@ApiResponse(code = 400, message = "Invalid input"),
+			@ApiResponse(code = 500, message = "Internal server error"),
+			@ApiResponse(code = 503, message = "Service unavailable") })
+	@Consumes("application/json")
+	public Response updateSong(
 			@ApiParam(value = "Song to be added", required = true) @Valid Song song) {
 
-		if (songRepository.addSong(bookId, song)) {
-			return Response.created(getCreatedUri(bookId)).entity(song).build();
+		UpdateResult r = songRepository.updateSong(bookId, song);
+			
+		if (r.getUpdatedRows() > 0) {
+			
+			return Response.ok("Song data updated succesfully.")
+					.type(MediaType.TEXT_PLAIN).build();
+			
 		} else {
-			throw new ApiException(ApiError.ADD_SONG_CONFLICT);
+			
+			Song newSong = new Song();
+			newSong.setId(r.getInsertedId());
+			newSong.setExtra(song.getExtra());
+			newSong.setLyrics(song.getLyrics());
+			newSong.setName(song.getName());
+			newSong.setOtherNotes(song.getOtherNotes());
+			newSong.setPageNumber(song.getPageNumber());
+			newSong.setSongNumber(song.getSongNumber());
+			
+			return Response.created(getCreatedUri(bookId)).entity(newSong).build();
 		}
+			
 
+		
 	}
 
 	@DELETE
 	@Path("/{song_id}")
-	@ApiOperation(value = "Delete a song")
+	@ApiOperation(value = "Delete a song. Warning! This will also delete all songs and verses related to the book.")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Song deleted succesfully"),
 			@ApiResponse(code = 400, message = "Invalid input"),
@@ -121,7 +158,7 @@ public class SongResource {
 	@GET
 	@ApiOperation(value = "Get song data")
 	@Path("/{song_id}")
-	public Response getSong(@Slug @PathParam("song_id") String songId) {
+	public Response getSong(@PathParam("song_id") String songId) {
 
 		Song song = songRepository.getSong(bookId, songId);
 
@@ -134,7 +171,7 @@ public class SongResource {
 
 	@Path("/{song_id}/extra-verses")
 	public ExtraVerseResource locateToExtraVerseResource(
-			@Slug @PathParam("song_id") String songId) {
+			@PathParam("song_id") String songId) {
 
 		Song song = songRepository.getSong(bookId, songId);
 
@@ -142,7 +179,7 @@ public class SongResource {
 			throw new ApiException(ApiError.GET_SONG_NOT_FOUND);
 
 		return new ExtraVerseResource(uriInfo, verseRepository, bookId,
-				song.getId());
+				songId);
 
 	}
 

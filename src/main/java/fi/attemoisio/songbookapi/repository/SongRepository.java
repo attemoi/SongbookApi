@@ -3,6 +3,7 @@ package fi.attemoisio.songbookapi.repository;
 import java.util.Collection;
 
 import fi.attemoisio.songbookapi.model.Song;
+import fi.attemoisio.songbookapi.model.SongPost;
 
 public interface SongRepository {
 
@@ -23,14 +24,22 @@ public interface SongRepository {
 	public Song getSong(String bookId, String songId);
 
 	/**
-	 * Adds a song.
+	 * Adds a song. Id is generated automatically using song name.
 	 * 
 	 * @param bookId
 	 * @param song
-	 * @return True, if the song was successfully added. False, if a song with
-	 *         the given id already exists.
+	 * @return Created song object.
 	 */
-	public boolean addSong(String bookId, Song song);
+	public Song addSong(String bookId, SongPost song);
+	
+	/**
+	 * Adds or updates a song. (Upsert)
+	 * 
+	 * @param bookId
+	 * @param song
+	 * @return 1, if row was added. 2, if row was inserted. 0 for failure.
+	 */
+	public UpdateResult updateSong(String bookId, Song song);
 
 	/**
 	 * Deletes a song from the repository
@@ -39,6 +48,21 @@ public interface SongRepository {
 	 * @return True, if the song was successfully deleted. False, if the song
 	 *         with the given id was not found.
 	 */
-	public boolean deleteSong(String bookId, String id);
+	public boolean deleteSong(String bookId, String songId);
 
+	public class UpdateResult {
+		private int updatedRows;
+		private String insertedId;
+		public UpdateResult(int updatedRows, String insertedId) {
+			this.updatedRows = updatedRows;
+			this.insertedId = insertedId;
+		}
+		public String getInsertedId() {
+			return insertedId;
+		}
+		public int getUpdatedRows() {
+			return updatedRows;
+		}
+	}
+	
 }

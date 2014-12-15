@@ -49,6 +49,9 @@ public class ApiExceptionMapper implements ExceptionMapper<Throwable> {
 		} else {
 
 			r.setCode(10);
+			r.setHttpStatus(500);
+			if (exception.getCause() != null)
+				r.setDescription(exception.getCause().getMessage());
 			if (exception.getMessage() != null)
 				r.setMessage(exception.getMessage());
 			else

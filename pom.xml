@@ -23,7 +23,7 @@
     	<license.licenseResolver>${project.baseUri}/src/license</license.licenseResolver>
     	<project.inceptionYear>2014</project.inceptionYear>
     	<license.organizationName>Atte Moisio</license.organizationName>
-    	<license.projectName>Laulukirja API</license.projectName>
+    	<license.projectName>Songbook API</license.projectName>
     	
     </properties>
 

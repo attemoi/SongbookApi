@@ -56,6 +56,7 @@ import com.wordnik.swagger.annotations.ApiResponses;
 import fi.attemoisio.songbookapi.errorhandling.ApiError;
 import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.Songbook;
+import fi.attemoisio.songbookapi.model.SongbookPost;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
 import fi.attemoisio.songbookapi.repository.SongbookRepository;
@@ -114,7 +115,7 @@ public class SongbookResource {
 			@ApiResponse(code = 503, message = "Service unavailable") })
 	@Consumes("application/json")
 	public Response postSongbook(
-			@ApiParam(value = "Songbook to be added", required = true) @Valid Songbook book) {
+			@ApiParam(value = "Songbook to be added", required = true) @Valid SongbookPost book) {
 
 		Songbook createdBook = songbookRepository.postSongbook(book);
 

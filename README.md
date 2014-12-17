@@ -1,7 +1,9 @@
 SongbookAPI
 ===========
 
-RESTful Web service for managing songbooks. Created using [Jersey](https://jersey.java.net/) and [Swagger](http://swagger.io/).
+Try it now: (http://laulukirja.herokuapp.com/)[http://laulukirja.herokuapp.com/]
+
+SongbookAPI is a RESTful Web service for managing songbooks. Created using [Jersey](https://jersey.java.net/) and [Swagger](http://swagger.io/).
 
 License
 ===========

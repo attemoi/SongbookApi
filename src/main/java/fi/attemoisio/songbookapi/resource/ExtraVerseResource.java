@@ -58,6 +58,9 @@ import fi.attemoisio.songbookapi.errorhandling.ApiError;
 import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.ExtraVerse;
 import fi.attemoisio.songbookapi.model.ExtraVersePost;
+import fi.attemoisio.songbookapi.model.Song;
+import fi.attemoisio.songbookapi.model.error.ErrorResponse;
+import fi.attemoisio.songbookapi.model.error.ValidationErrorResponse;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 
 @RequestScoped
@@ -85,11 +88,10 @@ public class ExtraVerseResource {
 	@GET
 	@ApiOperation(value = "List all extra verses for a song", notes = "Returns a list of all extra verses for a song.", response = ExtraVerse.class, responseContainer = "List")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Request completed succesfully"),
-			@ApiResponse(code = 204, message = "No verses found"),
-			@ApiResponse(code = 408, message = "Request timeout"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 200, message = "Request completed succesfully", response = ExtraVerse.class),
+			@ApiResponse(code = 204, message = "No verses found", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	public Response getExtraVerses() throws NoContentException {
 
 		Collection<ExtraVerse> extraVerses;
@@ -109,10 +111,10 @@ public class ExtraVerseResource {
 	@ApiOperation(value = "Update verse data")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Verse data updated successfully"),
-			@ApiResponse(code = 201, message = "New verse created succesfully"),
-			@ApiResponse(code = 400, message = "Invalid input"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 201, message = "New verse created succesfully", response = ExtraVerse.class),
+			@ApiResponse(code = 400, message = "Invalid input", response = ValidationErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	@Consumes("application/json")
 	public Response updateExtraVerse(
 			@ApiParam(value = "Verse to be added", required = true) @Valid ExtraVerse verse) {
@@ -126,10 +128,10 @@ public class ExtraVerseResource {
 	@POST
 	@ApiOperation(value = "Add a new verse.")
 	@ApiResponses(value = {
-			@ApiResponse(code = 201, message = "Verse created succesfully"),
-			@ApiResponse(code = 400, message = "Invalid input"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 201, message = "Verse created succesfully", response = ExtraVerse.class),
+			@ApiResponse(code = 400, message = "Invalid input", response = ValidationErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	@Consumes("application/json")
 	public Response addExtraVerse(
 			@ApiParam(value = "Verse to be added", required = true) @Valid ExtraVersePost verse) {
@@ -145,14 +147,13 @@ public class ExtraVerseResource {
 	@ApiOperation(value = "Delete an extra verse from a song")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Verse deleted succesfully"),
-			@ApiResponse(code = 400, message = "Invalid input"),
-			@ApiResponse(code = 404, message = "Verse not found"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 404, message = "Verse not found", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	public Response deleteExtraVerse(
 			@ApiParam(value = "Id of verse to delete", required = true) @PathParam("verse_id") String verseId) {
 
-		// Return not found instead of bar request
+		// Return not found instead of bad request
 		Integer parsedId;
 		try {
 			parsedId = Integer.parseUnsignedInt(verseId);
@@ -172,6 +173,11 @@ public class ExtraVerseResource {
 	@GET
 	@ApiOperation(value = "Get data for extra verse")
 	@Path("/{verse_id}")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Verse data fetched succesfully", response = ExtraVerse.class),
+			@ApiResponse(code = 404, message = "Verse not found", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	public Response getExtraVerse(
 			@ApiParam(value = "Verse id", required = true) @PathParam("verse_id") String verseId) {
 

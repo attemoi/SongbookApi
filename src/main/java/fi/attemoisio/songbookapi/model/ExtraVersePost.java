@@ -36,8 +36,8 @@ import com.wordnik.swagger.annotations.ApiModel;
 
 import fi.attemoisio.songbookapi.validation.Text;
 
-@XmlRootElement(name = "ExtraVerse")
-@ApiModel(description = "Extra verse model")
+@XmlRootElement(name = "ExtraVersePost")
+@ApiModel(description = "Extra verse POST model")
 @XmlType(name = "")
 public class ExtraVersePost {
 

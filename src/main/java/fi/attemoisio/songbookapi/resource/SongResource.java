@@ -57,6 +57,8 @@ import fi.attemoisio.songbookapi.errorhandling.ApiError;
 import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.Song;
 import fi.attemoisio.songbookapi.model.SongPost;
+import fi.attemoisio.songbookapi.model.error.ErrorResponse;
+import fi.attemoisio.songbookapi.model.error.ValidationErrorResponse;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository.PutResult;
@@ -87,11 +89,10 @@ public class SongResource {
 	@GET
 	@ApiOperation(value = "List all songs", notes = "Returns a list of all songs in a songbook.", response = Song.class, responseContainer = "List")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Request completed succesfully"),
-			@ApiResponse(code = 204, message = "No songs found"),
-			@ApiResponse(code = 408, message = "Request timeout"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 200, message = "Request completed succesfully", response = Song.class),
+			@ApiResponse(code = 204, message = "No songs found", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class)})
 	public Response getSongs() {
 
 		Collection<Song> songs;
@@ -110,11 +111,11 @@ public class SongResource {
 	@POST
 	@ApiOperation(value = "Add a new song. Id will be generated automatically.")
 	@ApiResponses(value = {
-			@ApiResponse(code = 201, message = "Song added succesfully"),
-			@ApiResponse(code = 400, message = "Invalid input"),
-			@ApiResponse(code = 409, message = "Song with given id already exists"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 201, message = "Song added succesfully", response = Song.class),
+			@ApiResponse(code = 400, message = "Invalid input", response = ValidationErrorResponse.class),
+			@ApiResponse(code = 409, message = "Song with given id already exists", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	@Consumes("application/json")
 	public Response postSong(
 			@ApiParam(value = "Song to be added", required = true) @Valid SongPost song) {
@@ -129,10 +130,10 @@ public class SongResource {
 	@ApiOperation(value = "Update existing or add a new song.")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Song updated succesfully"),
-			@ApiResponse(code = 201, message = "New song created succesfully"),
-			@ApiResponse(code = 400, message = "Invalid input"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 201, message = "New song created succesfully", response = Song.class),
+			@ApiResponse(code = 400, message = "Invalid input", response = ValidationErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	@Consumes("application/json")
 	public Response putSong(
 			@ApiParam(value = "Song to be added", required = true) @Valid Song song) {
@@ -166,10 +167,10 @@ public class SongResource {
 	@ApiOperation(value = "Delete a song and its' extra verses.")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Song deleted succesfully"),
-			@ApiResponse(code = 400, message = "Invalid input"),
-			@ApiResponse(code = 404, message = "Song not found"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 400, message = "Invalid input", response = ValidationErrorResponse.class),
+			@ApiResponse(code = 404, message = "Song not found", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	public Response deleteSong(
 			@ApiParam(value = "Id of song to delete", required = true) @PathParam("song_id") String songId) {
 
@@ -185,6 +186,11 @@ public class SongResource {
 	@GET
 	@ApiOperation(value = "Get song data")
 	@Path("/{song_id}")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Song data fetched succesfully", response = Song.class),
+			@ApiResponse(code = 404, message = "Song not found", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	public Response getSong(@PathParam("song_id") String songId) {
 
 		Song song = songRepository.getSong(bookId, songId);

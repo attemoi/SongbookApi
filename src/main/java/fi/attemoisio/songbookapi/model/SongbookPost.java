@@ -39,8 +39,8 @@ import com.wordnik.swagger.annotations.ApiModel;
 import fi.attemoisio.songbookapi.validation.Text;
 import fi.attemoisio.songbookapi.validation.Title;
 
-@XmlRootElement(name = "Songbook")
-@ApiModel(description = "Songbook model")
+@XmlRootElement(name = "SongbookPost")
+@ApiModel(description = "Songbook POST model")
 public class SongbookPost {
 	
 	private Integer releaseYear = null;

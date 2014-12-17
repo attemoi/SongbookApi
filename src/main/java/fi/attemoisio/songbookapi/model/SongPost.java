@@ -37,8 +37,8 @@ import com.wordnik.swagger.annotations.ApiModel;
 import fi.attemoisio.songbookapi.validation.Text;
 import fi.attemoisio.songbookapi.validation.Title;
 
-@XmlRootElement(name = "Song")
-@ApiModel(description = "Song model")
+@XmlRootElement(name = "SongPost")
+@ApiModel(description = "Song POST model")
 @XmlType(name="")
 public class SongPost {
 	

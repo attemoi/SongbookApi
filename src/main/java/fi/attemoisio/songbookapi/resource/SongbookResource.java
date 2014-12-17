@@ -57,6 +57,8 @@ import fi.attemoisio.songbookapi.errorhandling.ApiError;
 import fi.attemoisio.songbookapi.exceptions.ApiException;
 import fi.attemoisio.songbookapi.model.Songbook;
 import fi.attemoisio.songbookapi.model.SongbookPost;
+import fi.attemoisio.songbookapi.model.error.ErrorResponse;
+import fi.attemoisio.songbookapi.model.error.ValidationErrorResponse;
 import fi.attemoisio.songbookapi.repository.ExtraVerseRepository;
 import fi.attemoisio.songbookapi.repository.SongRepository;
 import fi.attemoisio.songbookapi.repository.SongbookRepository;
@@ -83,13 +85,16 @@ public class SongbookResource {
 	}
 
 	@GET
-	@ApiOperation(value = "List all songbooks", notes = "Returns a list of all available songbooks.", response = Songbook.class, responseContainer = "List")
+	@ApiOperation(
+			value = "List all songbooks", 
+			notes = "Returns a list of all available songbooks.", 
+			response = Songbook.class, 
+			responseContainer = "List")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Request completed succesfully"),
+			@ApiResponse(code = 200, message = "Request completed succesfully", response = Songbook.class),
 			@ApiResponse(code = 204, message = "No songbooks found"),
-			@ApiResponse(code = 408, message = "Request timeout"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	public Response getSongbooks() {
 
 		Collection<Songbook> books;
@@ -106,16 +111,16 @@ public class SongbookResource {
 	}
 
 	@POST
-	@ApiOperation(value = "Add a new songbook (json)")
+	@ApiOperation(
+			value = "Add a new songbook")
 	@ApiResponses(value = {
-			@ApiResponse(code = 201, message = "Songbook added succesfully"),
-			@ApiResponse(code = 400, message = "Invalid input"),
-			@ApiResponse(code = 409, message = "Songbook with given id already exists"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 201, message = "Songbook added succesfully", response = Songbook.class),
+			@ApiResponse(code = 400, message = "Invalid input", response = ValidationErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	@Consumes("application/json")
 	public Response postSongbook(
-			@ApiParam(value = "Songbook to be added", required = true) @Valid SongbookPost book) {
+			@ApiParam(value = "Songbook to be added", required = true)  @Valid SongbookPost book) {
 
 		Songbook createdBook = songbookRepository.postSongbook(book);
 
@@ -125,13 +130,15 @@ public class SongbookResource {
 	}
 	
 	@PUT
-	@ApiOperation(value = "Update existing or create a new songbook")
+	@ApiOperation(
+			value = "Update existing or create a new songbook",
+			response = Songbook.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Songbook data updated succesfully"),
-			@ApiResponse(code = 201, message = "Songbook added succesfully"),
-			@ApiResponse(code = 400, message = "Invalid input"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 201, message = "Songbook added succesfully", response = Songbook.class),
+			@ApiResponse(code = 400, message = "Invalid input", response = ValidationErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class )}) 
 	@Consumes("application/json")
 	public Response putSongbook(
 			@ApiParam(value = "Songbook to be added", required = true) @Valid Songbook book) {
@@ -163,10 +170,10 @@ public class SongbookResource {
 	@ApiOperation(value = "Delete a songbook and all related songs and verses.")
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Songbook deleted succesfully"),
-			@ApiResponse(code = 400, message = "Invalid input"),
-			@ApiResponse(code = 404, message = "Songbook not found"),
-			@ApiResponse(code = 500, message = "Internal server error"),
-			@ApiResponse(code = 503, message = "Service unavailable") })
+			@ApiResponse(code = 400, message = "Invalid input", response = ValidationErrorResponse.class),
+			@ApiResponse(code = 404, message = "Songbook not found", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	public Response deleteSongbook(
 			@ApiParam(value = "Id of songbook to delete", required = true) @PathParam("book_id") String bookId) {
 
@@ -182,6 +189,11 @@ public class SongbookResource {
 	@GET
 	@ApiOperation(value = "Get songbook data")
 	@Path("/{book_id}")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Songbook data fetched succesfully", response = Songbook.class),
+			@ApiResponse(code = 404, message = "Songbook not found", response = ErrorResponse.class),
+			@ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class),
+			@ApiResponse(code = 503, message = "Service unavailable", response = ErrorResponse.class) })
 	public Response getSongbook(@Slug @PathParam("book_id") String bookId) {
 
 		Songbook book = songbookRepository.getSongbook(bookId);

@@ -1,1 +1,1 @@
-web: java -cp target/classes:target/dependency/* fi.attemoisio.songbookapi.heroku.Main
+web:    java $JAVA_OPTS -jar target/dependency/jetty-runner.jar --port $PORT target/*.war

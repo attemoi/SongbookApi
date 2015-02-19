@@ -18,14 +18,8 @@
         <postgresql.version>9.3-1102-jdbc41</postgresql.version>
         <maven-compiler.version>3.1</maven-compiler.version>
         <mockito.version>1.9.5</mockito.version>
-        
-        <license.licenseName>wpl</license.licenseName>
-    	<license.licenseResolver>${project.baseUri}/src/license</license.licenseResolver>
-    	<project.inceptionYear>2014</project.inceptionYear>
-    	<license.organizationName>Atte Moisio</license.organizationName>
-    	<license.projectName>Songbook API</license.projectName>
-    	
-    </properties>
+	 <netbeans.hint.license>mit</netbeans.hint.license>
+	</properties>
 
     <dependencyManagement>
         <dependencies>    
@@ -117,42 +111,6 @@
     </dependencies>
 
     <build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>license-maven-plugin</artifactId>
-					<version>1.7</version>
-					<configuration>
-						<!-- Template location -->
-						<descriptionTemplate>${basedir}/src/license/header-template.ftl</descriptionTemplate>
-						<strictCheck>true</strictCheck>
-						<processStartTag>###################################################################=</processStartTag>
-						<processEndTag>###################################################################-</processEndTag>
-						<canUpdateDescription>true</canUpdateDescription>
-						<canUpdateLicense>true</canUpdateLicense>
-						<includes>
-							<include>**/*.java</include>
-						</includes>
-					</configuration>
-					<executions>
-						<execution>
-							<id>download-licenses</id>
-							<goals>
-								<goal>download-licenses</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>first</id>
-							<goals>
-								<goal>update-file-header</goal>
-							</goals>
-							<phase>process-sources</phase>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
     
         <finalName>songbook-api</finalName>
         <plugins>
